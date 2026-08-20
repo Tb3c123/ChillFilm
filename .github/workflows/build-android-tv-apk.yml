@@ -10,9 +10,6 @@ on:
 jobs:
   build-tv-apk:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./apps/tv-mobile
 
     steps:
       - name: Checkout Code
@@ -32,12 +29,15 @@ jobs:
           cache: true
 
       - name: Get Flutter Packages
+        working-directory: ./apps/tv-mobile
         run: flutter pub get
 
       - name: Build Android TV Release APK
+        working-directory: ./apps/tv-mobile
         run: flutter build apk --release --target-platform android-arm64
 
       - name: Rename Android TV APK Artifact
+        working-directory: ./apps/tv-mobile
         run: cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/app-android-tv-release.apk
 
       - name: Upload Android TV APK Artifact

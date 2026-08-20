@@ -1,44 +1,104 @@
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
-class WebviewFallbackPlayer extends StatelessWidget {
+class WebviewFallbackPlayer extends StatefulWidget {
   final String embedUrl;
 
   const WebviewFallbackPlayer({Key? key, required this.embedUrl}) : super(key: key);
 
   @override
+  State<WebviewFallbackPlayer> createState() => _WebviewFallbackPlayerState();
+}
+
+class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
+  late final WebViewController _controller;
+  bool _isLoading = true;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0xFF000000))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (String url) {
+            if (mounted) setState(() { _isLoading = true; _hasError = false; });
+          },
+          onPageFinished: (String url) {
+            if (mounted) setState(() { _isLoading = false; });
+          },
+          onWebResourceError: (WebResourceError error) {
+            // Log error
+          },
+        ),
+      );
+
+    if (widget.embedUrl.isNotEmpty) {
+      _controller.loadRequest(Uri.parse(widget.embedUrl));
+    } else {
+      _hasError = true;
+      _isLoading = false;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.black,
-      padding: const EdgeInsets.all(24),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: const Color(0xFF121722),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: const Color(0xFF00E5FF).withOpacity(0.5)),
+      child: Stack(
+        children: [
+          // WebView Canvas
+          if (widget.embedUrl.isNotEmpty && !_hasError)
+            Positioned.fill(
+              child: WebViewWidget(controller: _controller),
+            ),
+
+          // Loading Overlay
+          if (_isLoading)
+            Positioned.fill(
+              child: Container(
+                color: Colors.black,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(color: Color(0xFF00E5FF)),
+                      SizedBox(height: 16),
+                      Text(
+                        'Đang nạp trình phát video Embed Web...',
+                        style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              child: const Icon(Icons.play_circle_fill_rounded, color: Color(0xFF00E5FF), size: 64),
             ),
-            const SizedBox(height: 20),
-            const Text(
-              'Đang phát qua Trình Nhúng Máy Chủ Embed Web',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+
+          // Error Fallback View
+          if (_hasError)
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, color: Color(0xFFE50914), size: 48),
+                  const SizedBox(height: 12),
+                  const Text('Không thể nạp link nhúng embed video', style: TextStyle(color: Colors.white)),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (widget.embedUrl.isNotEmpty) {
+                        _controller.loadRequest(Uri.parse(widget.embedUrl));
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF00E5FF)),
+                    child: const Text('Thử Nạp Lại', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              embedUrl,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: Colors.white54, fontSize: 11),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }

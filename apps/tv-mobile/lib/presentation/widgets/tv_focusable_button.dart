@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class TvFocusableButton extends StatefulWidget {
   final Widget child;
@@ -26,6 +27,17 @@ class _TvFocusableButtonState extends State<TvFocusableButton> {
         setState(() {
           _isFocused = focused;
         });
+      },
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.select ||
+             event.logicalKey == LogicalKeyboardKey.enter ||
+             event.logicalKey == LogicalKeyboardKey.gameButtonA ||
+             event.logicalKey == LogicalKeyboardKey.space)) {
+          widget.onPressed();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
       },
       child: GestureDetector(
         onTap: widget.onPressed,

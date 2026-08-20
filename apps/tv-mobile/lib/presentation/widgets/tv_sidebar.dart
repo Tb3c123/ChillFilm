@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class TvSidebarItem {
   final IconData icon;
@@ -61,7 +62,7 @@ class TvSidebar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'CINEMA TV',
+                    'ChillPhim',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -70,7 +71,7 @@ class TvSidebar extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '10-FOOT LEANBACK',
+                    'CINEMA TV',
                     style: TextStyle(
                       color: Color(0xFF00E5FF),
                       fontSize: 9,
@@ -92,7 +93,21 @@ class TvSidebar extends StatelessWidget {
 
                 return Focus(
                   onFocusChange: (focused) {
-                    if (focused) onItemSelected(index);
+                    if (focused) {
+                      onItemSelected(index);
+                    }
+                  },
+                  onKeyEvent: (node, event) {
+                    if (event is KeyDownEvent &&
+                        (event.logicalKey == LogicalKeyboardKey.select ||
+                         event.logicalKey == LogicalKeyboardKey.enter ||
+                         event.logicalKey == LogicalKeyboardKey.gameButtonA ||
+                         event.logicalKey == LogicalKeyboardKey.space)) {
+                      onItemSelected(index);
+                      FocusScope.of(context).nextFocus(); // Di chuyển focus sang vùng nội dung khi bấm OK
+                      return KeyEventResult.handled;
+                    }
+                    return KeyEventResult.ignored;
                   },
                   child: Builder(builder: (context) {
                     final isFocused = Focus.of(context).hasFocus;

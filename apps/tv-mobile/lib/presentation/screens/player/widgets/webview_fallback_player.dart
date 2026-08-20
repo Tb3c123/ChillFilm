@@ -4,7 +4,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 class WebviewFallbackPlayer extends StatefulWidget {
   final String embedUrl;
 
-  const WebviewFallbackPlayer({Key? key, required this.embedUrl}) : super(key: key);
+  const WebviewFallbackPlayer({super.key, required this.embedUrl});
 
   @override
   State<WebviewFallbackPlayer> createState() => _WebviewFallbackPlayerState();
@@ -60,7 +60,7 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
             Positioned.fill(
               child: Container(
                 color: Colors.black,
-                child: Center(
+                child: const Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

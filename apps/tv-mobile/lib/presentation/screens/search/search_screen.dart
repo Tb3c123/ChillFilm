@@ -21,6 +21,7 @@ class _SearchScreenState extends State<SearchScreen> {
   late SearchBloc _searchBloc;
   SearchState _state = SearchInitialState();
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -29,6 +30,13 @@ class _SearchScreenState extends State<SearchScreen> {
     final localDS = MovieLocalDataSourceImpl(LocalStorage());
     final repo = MovieRepositoryImpl(remoteDataSource: remoteDS, localDataSource: localDS);
     _searchBloc = SearchBloc(SearchMoviesUseCase(repo));
+  }
+
+  @override
+  void dispose() {
+    _searchFocusNode.dispose();
+    _controller.dispose();
+    super.dispose();
   }
 
   void _onSearch(String keyword) async {
@@ -57,11 +65,13 @@ class _SearchScreenState extends State<SearchScreen> {
           const Text('TÌM KIẾM PHIM CHILLPHIM', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900)),
           const SizedBox(height: 16),
           TextField(
+            focusNode: _searchFocusNode,
+            autofocus: false,
             controller: _controller,
             onSubmitted: _onSearch,
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
-              hintText: 'Nhập tên phim, diễn viên...',
+              hintText: 'Nhấn nút OK để nhập tên phim, diễn viên...',
               hintStyle: const TextStyle(color: Colors.white38),
               prefixIcon: const Icon(Icons.search, color: Color(0xFF00E5FF)),
               filled: true,

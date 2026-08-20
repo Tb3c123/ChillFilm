@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../domain/entities/movie_entity.dart';
 
 class TvMovieCard extends StatefulWidget {
@@ -26,10 +27,21 @@ class _TvMovieCardState extends State<TvMovieCard> {
           _isFocused = focused;
         });
       },
+      onKeyEvent: (node, event) {
+        if (event is KeyDownEvent &&
+            (event.logicalKey == LogicalKeyboardKey.select ||
+             event.logicalKey == LogicalKeyboardKey.enter ||
+             event.logicalKey == LogicalKeyboardKey.gameButtonA ||
+             event.logicalKey == LogicalKeyboardKey.space)) {
+          widget.onTap();
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
       child: GestureDetector(
         onTap: widget.onTap,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 150),
           transform: Matrix4.identity()..scale(_isFocused ? 1.08 : 1.0),
           transformAlignment: Alignment.center,
           decoration: BoxDecoration(

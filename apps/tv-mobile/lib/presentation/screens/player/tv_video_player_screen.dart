@@ -10,10 +10,10 @@ class TvVideoPlayerScreen extends StatefulWidget {
   final EpisodeModel episode;
 
   const TvVideoPlayerScreen({
-    Key? key,
+    super.key,
     required this.movie,
     required this.episode,
-  }) : super(key: key);
+  });
 
   @override
   State<TvVideoPlayerScreen> createState() => _TvVideoPlayerScreenState();
@@ -22,7 +22,7 @@ class TvVideoPlayerScreen extends StatefulWidget {
 class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
   VideoPlayerController? _controller;
   bool _isPlaying = true;
-  bool _showControls = true;
+  final bool _showControls = true;
   bool _useEmbedFallback = false;
 
   @override
@@ -78,6 +78,7 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
     if (event is KeyDownEvent) {
       if (event.logicalKey == LogicalKeyboardKey.select ||
           event.logicalKey == LogicalKeyboardKey.enter ||
+          event.logicalKey == LogicalKeyboardKey.gameButtonA ||
           event.logicalKey == LogicalKeyboardKey.space) {
         // Nút OK: Play / Pause (trên Native Player)
         setState(() {

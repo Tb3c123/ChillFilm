@@ -35,7 +35,7 @@ class TvSidebar extends StatelessWidget {
       color: const Color(0xFF07090E),
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       child: Column(
-        crossAxisAlignment: CrossAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -58,14 +58,14 @@ class TvSidebar extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               const Column(
-                crossAxisAlignment: CrossAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'CINEMA TV',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
-                      fontWeight: FontWeight.black,
+                      fontWeight: FontWeight.w900,
                       letterSpacing: 1.1,
                     ),
                   ),

@@ -64,7 +64,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(32),
         child: Column(
-          crossAxisAlignment: CrossAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Back Button
             GestureDetector(
@@ -80,7 +80,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             const SizedBox(height: 24),
 
             Row(
-              crossAxisAlignment: CrossAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
@@ -90,10 +90,10 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(detail.name, style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.black)),
-                      Text(detail.originalName, style: const TextStyle(color: Colors.white54, fontSize: 14, italic: true)),
+                      Text(detail.name, style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w900)),
+                      Text(detail.originalName, style: const TextStyle(color: Colors.white54, fontSize: 14, fontStyle: FontStyle.italic)),
                       const SizedBox(height: 16),
 
                       // 7 Metadata Fields Grid
@@ -159,7 +159,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                           children: [
                             Icon(Icons.play_arrow_rounded, color: Colors.white),
                             SizedBox(width: 8),
-                            Text('XEM NGAY TẬP 1', style: TextStyle(color: Colors.white, fontWeight: FontWeight.black)),
+                            Text('XEM NGAY TẬP 1', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
                           ],
                         ),
                       ),
@@ -176,7 +176,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
 
   Widget _buildInfoItem(String label, String value, {bool isCyan = false}) {
     return Column(
-      crossAxisAlignment: CrossAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: const TextStyle(color: Colors.white54, fontSize: 10)),
         Text(

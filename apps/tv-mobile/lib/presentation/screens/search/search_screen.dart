@@ -42,9 +42,9 @@ class _SearchScreenState extends State<SearchScreen> {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
-        crossAxisAlignment: CrossAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('TÌM KIẾM PHIM SMART TV', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.black)),
+          const Text('TÌM KIẾM PHIM SMART TV', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900)),
           const SizedBox(height: 16),
           TextField(
             controller: _controller,

@@ -8,9 +8,9 @@ class LibraryScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
-        crossAxisAlignment: CrossAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('TỦ PHIM & LỊCH SỬ XEM', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.black)),
+          const Text('TỦ PHIM & LỊCH SỬ XEM', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900)),
           const SizedBox(height: 24),
           Expanded(
             child: Container(

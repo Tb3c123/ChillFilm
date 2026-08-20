@@ -114,7 +114,7 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 22,
-                        fontWeight: FontWeight.black,
+                        fontWeight: FontWeight.w900,
                       ),
                     ),
                     Container(

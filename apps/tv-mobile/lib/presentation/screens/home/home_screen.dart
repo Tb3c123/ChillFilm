@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
-        crossAxisAlignment: CrossAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Hero Banner
           Container(
@@ -73,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             padding: const EdgeInsets.all(24),
             child: Column(
-              crossAxisAlignment: CrossAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Container(
@@ -82,12 +82,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: const Color(0xFFE50914),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Text('PHIM TIÊU ĐIỂM', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.black)),
+                  child: const Text('PHIM TIÊU ĐIỂM', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w900)),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   hero.name,
-                  style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.black),
+                  style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -100,13 +100,13 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 32),
 
           // Recent Movies Title
-          const Row(
+          Row(
             children: [
-              Container(width: 4, height: 18, color: Color(0xFF00E5FF)),
-              SizedBox(width: 8),
-              Text(
+              Container(width: 4, height: 18, color: const Color(0xFF00E5FF)),
+              const SizedBox(width: 8),
+              const Text(
                 'PHIM MỚI CẬP NHẬT',
-                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.black),
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900),
               ),
             ],
           ),

@@ -52,7 +52,7 @@ class _TvMovieCardState extends State<TvMovieCard> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(13),
             child: Column(
-              crossAxisAlignment: CrossAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Stack(
@@ -75,7 +75,7 @@ class _TvMovieCardState extends State<TvMovieCard> {
                           ),
                           child: Text(
                             widget.movie.quality,
-                            style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.black),
+                            style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w900),
                           ),
                         ),
                       ),
@@ -85,7 +85,7 @@ class _TvMovieCardState extends State<TvMovieCard> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
-                    crossAxisAlignment: CrossAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         widget.movie.name,

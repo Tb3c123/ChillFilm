@@ -4,13 +4,13 @@ import 'app_colors.dart';
 class AppTypography {
   static const TextStyle h1 = TextStyle(
     fontSize: 32,
-    fontWeight: FontWeight.black,
+    fontWeight: FontWeight.w900,
     color: AppColors.textPrimary,
   );
 
   static const TextStyle h2 = TextStyle(
     fontSize: 24,
-    fontWeight: FontWeight.extrabold,
+    fontWeight: FontWeight.w800,
     color: AppColors.textPrimary,
   );
 

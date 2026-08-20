@@ -62,7 +62,7 @@ class _TvFocusableCardState extends State<TvFocusableCard> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(13),
             child: Column(
-              crossAxisAlignment: CrossAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Stack(
@@ -102,7 +102,7 @@ class _TvFocusableCardState extends State<TvFocusableCard> {
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Column(
-                    crossAxisAlignment: CrossAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         widget.movie.name,

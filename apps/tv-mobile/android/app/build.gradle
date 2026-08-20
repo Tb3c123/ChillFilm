@@ -25,7 +25,6 @@ if (flutterVersionName == null) {
 android {
     namespace "com.chillfilm.tv_mobile"
     compileSdkVersion 34
-    ndkVersion flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -42,9 +41,6 @@ android {
         targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        ndk {
-            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
-        }
     }
 
     buildTypes {

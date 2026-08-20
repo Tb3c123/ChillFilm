@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 enum DPadAction { up, down, left, right, select, back }
 
 class DPadDetector {
-  static DPadAction? detectAction(RawKeyEvent event) {
-    if (event is! RawKeyDownEvent) return null;
+  static DPadAction? detectAction(KeyEvent event) {
+    if (event is! KeyDownEvent) return null;
 
     final key = event.logicalKey;
     if (key == LogicalKeyboardKey.arrowUp) return DPadAction.up;

@@ -26,7 +26,7 @@ class _TvFocusableCardState extends State<TvFocusableCard> {
           _isFocused = focused;
         });
       },
-      onKey: (node, event) {
+      onKeyEvent: (node, event) {
         return KeyEventResult.ignored;
       },
       child: GestureDetector(

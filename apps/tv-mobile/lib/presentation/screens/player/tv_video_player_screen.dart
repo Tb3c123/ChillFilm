@@ -74,8 +74,8 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
     super.dispose();
   }
 
-  void _handleKeyEvent(RawKeyEvent event) {
-    if (event is RawKeyDownEvent) {
+  void _handleKeyEvent(KeyEvent event) {
+    if (event is KeyDownEvent) {
       if (event.logicalKey == LogicalKeyboardKey.select ||
           event.logicalKey == LogicalKeyboardKey.enter ||
           event.logicalKey == LogicalKeyboardKey.space) {
@@ -110,9 +110,9 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return RawKeyboardListener(
+    return KeyboardListener(
       focusNode: FocusNode()..requestFocus(),
-      onKey: _handleKeyEvent,
+      onKeyEvent: _handleKeyEvent,
       child: Scaffold(
         backgroundColor: Colors.black,
         body: Stack(
@@ -189,6 +189,52 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
                 ),
               ),
             ),
+
+            // Bottom Remote Controls Guide (Uses _isPlaying)
+            if (!_useEmbedFallback)
+              Positioned(
+                bottom: 24,
+                left: 24,
+                right: 24,
+                child: AnimatedOpacity(
+                  opacity: _showControls ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 200),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0C1018).withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white12),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              _isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
+                              color: const Color(0xFF00E5FF),
+                              size: 24,
+                            ),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'OK: Play/Pause',
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                            ),
+                          ],
+                        ),
+                        const Row(
+                          children: [
+                            Icon(Icons.replay_10_rounded, color: Colors.white70, size: 20),
+                            SizedBox(width: 8),
+                            Text('Trái/Phải: Tua 10s', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

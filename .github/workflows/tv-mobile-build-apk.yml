@@ -31,21 +31,15 @@ jobs:
         working-directory: ./apps/tv-mobile
         run: flutter pub get
 
-      - name: Build Android Mobile Release APK
+      - name: Build Universal Release APK (ARM32 + ARM64)
         working-directory: ./apps/tv-mobile
-        run: flutter build apk --release --target-platform android-arm64
+        run: flutter build apk --release
 
-      - name: Rename & Organize Mobile APK
+      - name: Organize Release APKs
         working-directory: ./apps/tv-mobile
-        run: cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/app-mobile-release.apk
-
-      - name: Build Android TV Release APK
-        working-directory: ./apps/tv-mobile
-        run: flutter build apk --release --target-platform android-arm64
-
-      - name: Rename & Organize Android TV APK
-        working-directory: ./apps/tv-mobile
-        run: cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/app-android-tv-release.apk
+        run: |
+          cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/app-mobile-release.apk
+          cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/app-android-tv-release.apk
 
       - name: Upload Mobile APK Artifact
         uses: actions/upload-artifact@v4

@@ -32,9 +32,9 @@ jobs:
         working-directory: ./apps/tv-mobile
         run: flutter pub get
 
-      - name: Build Android TV Release APK
+      - name: Build Universal Android TV Release APK (ARM32 + ARM64)
         working-directory: ./apps/tv-mobile
-        run: flutter build apk --release --target-platform android-arm64
+        run: flutter build apk --release
 
       - name: Rename Android TV APK Artifact
         working-directory: ./apps/tv-mobile

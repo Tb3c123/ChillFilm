@@ -37,14 +37,24 @@ class _SearchScreenState extends State<SearchScreen> {
     if (mounted) setState(() { _state = res; });
   }
 
+  int _getCrossAxisCount(double width) {
+    if (width < 600) return 2;
+    if (width < 900) return 3;
+    if (width < 1200) return 4;
+    return 5;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final crossAxisCount = _getCrossAxisCount(screenWidth);
+
     return Padding(
-      padding: const EdgeInsets.all(24.0),
+      padding: EdgeInsets.all(screenWidth < 600 ? 12 : 24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('TÌM KIẾM PHIM SMART TV', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900)),
+          const Text('TÌM KIẾM PHIM CHILLPHIM', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900)),
           const SizedBox(height: 16),
           TextField(
             controller: _controller,
@@ -66,11 +76,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 ? const LoadingIndicator()
                 : _state is SearchLoadedState
                     ? GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 5,
-                          childAspectRatio: 0.68,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount,
+                          childAspectRatio: screenWidth < 600 ? 0.72 : 0.68,
+                          crossAxisSpacing: screenWidth < 600 ? 10 : 16,
+                          mainAxisSpacing: screenWidth < 600 ? 10 : 16,
                         ),
                         itemCount: (_state as SearchLoadedState).movies.length,
                         itemBuilder: (context, index) {

@@ -178,7 +178,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                         decoration: BoxDecoration(
                           color: const Color(0xFF07090E),
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: const Color(0xFF00E5FF).withValues(alpha: 0.3)),
+                          border: Border.all(color: const Color(0xFF00E5FF).withOpacity(0.3)),
                         ),
                         child: Wrap(
                           spacing: 20,

@@ -19,7 +19,7 @@ class WebviewFallbackPlayer extends StatelessWidget {
               decoration: BoxDecoration(
                 color: const Color(0xFF121722),
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: const Color(0xFF00E5FF).withValues(alpha: 0.5)),
+                border: Border.all(color: const Color(0xFF00E5FF).withOpacity(0.5)),
               ),
               child: const Icon(Icons.play_circle_fill_rounded, color: Color(0xFF00E5FF), size: 64),
             ),

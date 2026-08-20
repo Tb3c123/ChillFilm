@@ -188,7 +188,7 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF00E5FF).withValues(alpha: 0.2),
+                        color: const Color(0xFF00E5FF).withOpacity(0.2),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: const Color(0xFF00E5FF)),
                       ),
@@ -217,7 +217,7 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0C1018).withValues(alpha: 0.9),
+                    color: const Color(0xFF0C1018).withOpacity(0.9),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.white12),
                   ),

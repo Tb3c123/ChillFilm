@@ -78,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
               image: DecorationImage(
                 image: NetworkImage(hero.posterUrl),
                 fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(Colors.black.withValues(alpha: 0.5), BlendMode.darken),
+                colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
               ),
             ),
             padding: const EdgeInsets.all(20),

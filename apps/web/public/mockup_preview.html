@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Ecosystem - Full Interactive Mockup</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            cinema: {
+              950: '#030508',
+              900: '#07090e',
+              850: '#0c1018',
+              800: '#121722',
+              750: '#19202e',
+              accent: '#e50914',
+              gold: '#fbbf24',
+              cyan: '#00e5ff',
+              cyanHover: '#00b4d8',
+              cyanGlow: '#70f3ff'
+            },
+            cyan: {
+              300: '#70f3ff',
+              400: '#00e5ff',
+              500: '#00b8e6',
+              600: '#008fb3'
+            }
+          },
+          scale: {
+            '108': '1.08',
+          },
+          boxShadow: {
+            'tv-glow': '0 0 40px rgba(0, 229, 255, 0.95)',
+            'card-shadow': '0 12px 35px -10px rgba(0, 0, 0, 0.9)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+    }
+    .tv-focusable {
+      outline: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .tv-focusable.tv-focused {
+      transform: scale(1.08);
+      z-index: 50;
+      box-shadow: 0 0 40px rgba(0, 229, 255, 0.95);
+      border-color: #00e5ff !important;
+      outline: 3.5px solid #00e5ff;
+    }
+    .tv-sidebar-item.tv-focused {
+      background: linear-gradient(90deg, rgba(0, 229, 255, 0.35) 0%, rgba(0, 229, 255, 0.05) 100%);
+      border-left-color: #00e5ff !important;
+      color: #00e5ff;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-cinema-950 text-slate-100 font-sans antialiased min-h-screen selection:bg-cinema-accent selection:text-white flex flex-col">
+
+  <header class="sticky top-0 z-50 bg-cinema-900/95 backdrop-blur-md border-b border-slate-800/90 px-4 py-2.5 flex flex-wrap items-center justify-between gap-3 flex-shrink-0">
+    <div class="flex items-center space-x-3">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-red-600 to-amber-500 flex items-center justify-center font-black text-white shadow-lg">
+        <i class="fa-solid fa-film text-base"></i>
+      </div>
+      <div>
+        <h1 class="font-bold text-sm leading-tight text-white flex items-center gap-2">
+          MOVIE ECOSYSTEM <span class="bg-cinema-accent/20 text-cinema-accent text-[10px] px-2 py-0.5 rounded font-mono border border-cinema-accent/30 uppercase">DESIGN PREVIEW</span>
+        </h1>
+        <p class="text-[11px] text-slate-400">API: <code class="text-cyan-400">phim.nguonc.com</code></p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-3">
+      <div class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs">
+        <button onclick="navigateWebScreen('home')" id="btn-web-home" class="web-nav-btn px-3 py-1 rounded-lg font-semibold bg-cinema-accent text-white">Trang Chủ</button>
+        <button onclick="navigateWebScreen('search')" id="btn-web-search" class="web-nav-btn px-3 py-1 rounded-lg font-semibold text-slate-400 hover:text-white">Tìm Kiếm</button>
+        <button onclick="navigateWebScreen('library')" id="btn-web-library" class="web-nav-btn px-3 py-1 rounded-lg font-semibold text-slate-400 hover:text-white">Tủ Phim</button>
+      </div>
+
+      <div class="flex bg-slate-900/90 p-1 rounded-xl border border-slate-700/60 shadow-inner">
+        <button id="tab-web" onclick="switchMode('web')" class="flex items-center space-x-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all bg-cinema-accent text-white shadow">
+          <i class="fa-solid fa-desktop"></i><span>Web App</span>
+        </button>
+        <button id="tab-tv" onclick="switchMode('tv')" class="flex items-center space-x-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">
+          <i class="fa-solid fa-tv"></i><span>Android TV Fullscreen</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- WEB MODE -->
+  <div id="view-web" class="flex-1 flex flex-col transition-all duration-300">
+    <nav class="bg-cinema-900/90 backdrop-blur border-b border-slate-800/80 px-6 py-3 flex items-center justify-between sticky top-[53px] z-40">
+      <div class="flex items-center space-x-8">
+        <span class="text-xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-amber-400 to-cyan-400 cursor-pointer" onclick="navigateWebScreen('home')">NGUONC FILM</span>
+        <div class="hidden lg:flex items-center space-x-6 text-sm font-semibold text-slate-300">
+          <button onclick="navigateWebScreen('home')" class="hover:text-white transition">Trang Chủ</button>
+          <button onclick="navigateWebScreen('search')" class="hover:text-cyan-400 transition">Tìm Kiếm</button>
+          <button onclick="navigateWebScreen('library')" class="hover:text-cyan-400 transition">Tủ Phim</button>
+        </div>
+      </div>
+      <div class="relative w-72">
+        <input type="text" id="web-top-search-input" oninput="onWebSearchInput(this.value)" placeholder="Tìm phim, diễn viên..." class="w-full bg-slate-800/90 border border-slate-700 text-xs text-slate-200 rounded-full pl-9 pr-4 py-2 focus:outline-none focus:border-cyan-400 transition">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+      </div>
+    </nav>
+
+    <main class="flex-1">
+      <section id="web-screen-home" class="web-screen-content block">
+        <div class="relative w-full h-[460px] bg-slate-950 overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1600&q=80" class="w-full h-full object-cover opacity-40 filter blur-[1px]">
+          <div class="absolute bottom-10 left-6 md:left-16 max-w-2xl space-y-4">
+            <h2 class="text-3xl md:text-5xl font-black text-white">THIÊN TRƯỜNG AN: PHONG VÂN BẮC HẢI</h2>
+            <p class="text-slate-300 text-sm">Cuộc chiến sinh tồn giữa các đại thế lực cổ xưa.</p>
+            <div class="flex space-x-4">
+              <button onclick="openMoviePlayer('thien-truong-an', 1)" class="bg-cinema-accent text-white font-bold px-6 py-3 rounded-xl shadow-lg">Xem Ngay Tập 1</button>
+              <button onclick="openMovieDetail('thien-truong-an')" class="bg-slate-800 text-slate-200 font-semibold px-5 py-3 rounded-xl border border-slate-700">Thông Tin Phim</button>
+            </div>
+          </div>
+        </div>
+        <div class="px-6 md:px-16 py-10 space-y-4">
+          <h3 class="text-lg font-black text-white uppercase flex items-center gap-2">
+            <span class="w-1.5 h-5 bg-cinema-accent rounded-full inline-block"></span> Phim Mới Cập Nhật (Click card xem chi tiết)
+          </h3>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6" id="web-movie-cards-container"></div>
+        </div>
+      </section>
+
+      <section id="web-screen-detail" class="web-screen-content hidden px-6 md:px-16 py-8 space-y-8">
+        <div class="bg-cinema-800 border border-slate-700/80 rounded-3xl p-8 flex flex-col md:flex-row gap-8 shadow-2xl">
+          <div class="w-52 md:w-64 flex-shrink-0 aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl relative border border-slate-700">
+            <img id="detail-poster" src="" class="w-full h-full object-cover">
+            <span id="detail-badge-quality" class="absolute top-3 left-3 bg-cinema-accent text-white text-xs font-extrabold px-2.5 py-1 rounded shadow">HD</span>
+          </div>
+
+          <div class="space-y-5 flex-1">
+            <div class="space-y-1">
+              <h2 id="detail-title" class="text-3xl md:text-4xl font-black text-white">TÊN PHIM</h2>
+              <p id="detail-original-title" class="text-slate-400 text-sm italic">Original Title</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 bg-slate-900/90 p-4 rounded-2xl border border-cyan-500/30 text-xs">
+              <div class="space-y-0.5"><span class="text-slate-400 block text-[11px]">1. Số Tập:</span> <span id="detail-episodes" class="text-cyan-400 font-bold text-sm">--</span></div>
+              <div class="space-y-0.5"><span class="text-slate-400 block text-[11px]">2. Thời Lượng:</span> <span id="detail-duration" class="text-slate-100 font-semibold">--</span></div>
+              <div class="space-y-0.5"><span class="text-slate-400 block text-[11px]">3. Đạo Diễn:</span> <span id="detail-director" class="text-slate-100 font-semibold">--</span></div>
+              <div class="space-y-0.5"><span class="text-slate-400 block text-[11px]">4. Năm Phát Hành:</span> <span id="detail-year" class="text-cyan-400 font-bold">--</span></div>
+              <div class="space-y-0.5"><span class="text-slate-400 block text-[11px]">5. Thể Loại:</span> <span id="detail-genre" class="text-cyan-300 font-semibold">--</span></div>
+              <div class="space-y-0.5"><span class="text-slate-400 block text-[11px]">6. Quốc Gia:</span> <span id="detail-country" class="text-slate-100 font-semibold">--</span></div>
+              <div class="col-span-2 space-y-0.5"><span class="text-slate-400 block text-[11px]">7. Diễn Viên:</span> <span id="detail-casts" class="text-slate-200 font-medium">--</span></div>
+            </div>
+
+            <p id="detail-description" class="text-slate-300 text-sm leading-relaxed">Description...</p>
+
+            <div class="flex items-center space-x-4 pt-2">
+              <button id="detail-btn-play" class="bg-cinema-accent hover:bg-red-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2">
+                <i class="fa-solid fa-play"></i><span>Phát Video (Tập 1)</span>
+              </button>
+              <button onclick="navigateWebScreen('home')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-5 py-3 rounded-xl border border-slate-700">
+                <i class="fa-solid fa-arrow-left mr-1"></i> Quay Lại Trang Chủ
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-cinema-800 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <h3 class="text-base font-bold text-white">Danh Sách Tập Phim (Bấm số tập để phát đúng tập):</h3>
+          <div id="detail-episodes-grid" class="flex flex-wrap gap-2.5"></div>
+        </div>
+      </section>
+
+      <section id="web-screen-player" class="web-screen-content hidden px-6 md:px-16 py-6 space-y-6">
+        <h3 id="player-movie-title" class="font-bold text-white text-lg">TÊN PHIM - Tập 01</h3>
+        <div class="relative aspect-video w-full bg-black rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center">
+          <img id="player-backdrop" src="" class="w-full h-full object-cover opacity-60">
+          <i class="fa-solid fa-play text-4xl text-white"></i>
+        </div>
+        <div class="bg-cinema-800 border border-slate-800 rounded-2xl p-5 space-y-3">
+          <h4 class="text-sm font-bold text-slate-300">Chọn Tập Phim Trong Player:</h4>
+          <div id="web-player-episodes-grid" class="flex flex-wrap gap-2"></div>
+        </div>
+      </section>
+
+      <section id="web-screen-search" class="web-screen-content hidden px-6 md:px-16 py-8 space-y-6"><h2 class="text-xl font-bold text-white">Tìm Kiếm Phim</h2></section>
+      <section id="web-screen-library" class="web-screen-content hidden px-6 md:px-16 py-8 space-y-6"><h2 class="text-xl font-bold text-white">Tủ Phim</h2></section>
+    </main>
+  </div>
+
+  <!-- ANDROID TV MODE -->
+  <div id="view-tv" class="hidden fixed inset-0 z-40 bg-cinema-950 flex w-screen h-screen overflow-hidden">
+    <aside class="w-24 lg:w-64 bg-cinema-900 border-r border-slate-800/90 p-5 flex flex-col justify-between z-30 flex-shrink-0">
+      <div class="space-y-8">
+        <div class="flex items-center space-x-3 px-2">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white text-2xl font-black">
+            <i class="fa-solid fa-tv"></i>
+          </div>
+          <span class="hidden lg:block text-lg font-black text-white">CINEMA TV</span>
+        </div>
+        <nav class="space-y-3" id="tv-nav-group">
+          <div onclick="navigateTVScreen('tv-screen-home')" id="tv-menu-home" class="tv-focusable tv-sidebar-item flex items-center space-x-4 px-4 py-3.5 rounded-2xl cursor-pointer text-slate-300 border-l-4 border-transparent" tabIndex="0">
+            <i class="fa-solid fa-house text-xl w-6"></i><span class="hidden lg:block text-sm font-bold">Trang Chủ</span>
+          </div>
+          <div onclick="navigateTVScreen('tv-screen-search')" id="tv-menu-search" class="tv-focusable tv-sidebar-item flex items-center space-x-4 px-4 py-3.5 rounded-2xl cursor-pointer text-slate-300 border-l-4 border-transparent" tabIndex="0">
+            <i class="fa-solid fa-magnifying-glass text-xl w-6"></i><span class="hidden lg:block text-sm font-bold">Tìm Kiếm TV</span>
+          </div>
+          <div onclick="navigateTVScreen('tv-screen-library')" id="tv-menu-library" class="tv-focusable tv-sidebar-item flex items-center space-x-4 px-4 py-3.5 rounded-2xl cursor-pointer text-slate-300 border-l-4 border-transparent" tabIndex="0">
+            <i class="fa-solid fa-bookmark text-xl w-6"></i><span class="hidden lg:block text-sm font-bold">Tủ Phim</span>
+          </div>
+        </nav>
+      </div>
+    </aside>
+
+    <section class="flex-1 overflow-y-auto no-scrollbar relative p-8 space-y-8 bg-cinema-950">
+      <div id="tv-screen-home" class="tv-screen-content space-y-8 block">
+        <div class="relative rounded-3xl overflow-hidden aspect-[21/8] bg-slate-900 border border-slate-800">
+          <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1600&q=80" class="w-full h-full object-cover opacity-50">
+          <div class="absolute bottom-8 left-8 max-w-2xl space-y-4">
+            <h2 class="text-4xl font-black text-white">THIÊN TRƯỜNG AN</h2>
+            <div class="flex space-x-4">
+              <button onclick="openTVMoviePlayer('thien-truong-an', 1)" class="tv-focusable bg-cinema-accent text-white font-black px-8 py-3.5 rounded-2xl shadow-tv-glow" tabIndex="0">XEM NGAY (OK)</button>
+              <button onclick="openTVMovieDetail('thien-truong-an')" class="tv-focusable bg-slate-800 text-slate-200 font-bold px-6 py-3.5 rounded-2xl" tabIndex="0">Chi Tiết Phim</button>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <h3 class="text-xl font-bold text-white">Phim Đề Xuất Smart TV</h3>
+          <div class="grid grid-cols-4 lg:grid-cols-5 gap-6" id="tv-movie-cards-container"></div>
+        </div>
+      </div>
+
+      <div id="tv-screen-detail" class="tv-screen-content space-y-6 hidden">
+        <div class="bg-cinema-800 rounded-3xl p-8 border border-slate-800 flex gap-8 shadow-2xl">
+          <img id="tv-detail-poster" src="" class="w-56 aspect-[2/3] object-cover rounded-2xl">
+          <div class="space-y-5 flex-1">
+            <h2 id="tv-detail-title" class="text-3xl font-black text-white">TÊN PHIM TV</h2>
+            <p id="tv-detail-original-title" class="text-slate-400 text-sm italic">Original Title</p>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 bg-slate-900/90 p-4 rounded-2xl border border-cyan-500/30 text-xs">
+              <div><span class="text-slate-400 block text-[11px]">1. Số Tập:</span> <span id="tv-detail-episodes" class="text-cyan-400 font-bold">--</span></div>
+              <div><span class="text-slate-400 block text-[11px]">2. Thời Lượng:</span> <span id="tv-detail-duration" class="text-slate-100 font-semibold">--</span></div>
+              <div><span class="text-slate-400 block text-[11px]">3. Đạo Diễn:</span> <span id="tv-detail-director" class="text-slate-100 font-semibold">--</span></div>
+              <div><span class="text-slate-400 block text-[11px]">4. Năm Phát Hành:</span> <span id="tv-detail-year" class="text-cyan-400 font-bold">--</span></div>
+              <div><span class="text-slate-400 block text-[11px]">5. Thể Loại:</span> <span id="tv-detail-genre" class="text-cyan-300 font-semibold">--</span></div>
+              <div><span class="text-slate-400 block text-[11px]">6. Quốc Gia:</span> <span id="tv-detail-country" class="text-slate-100 font-semibold">--</span></div>
+              <div class="col-span-2"><span class="text-slate-400 block text-[11px]">7. Diễn Viên:</span> <span id="tv-detail-casts" class="text-slate-200 font-medium">--</span></div>
+            </div>
+            <p id="tv-detail-desc" class="text-slate-300 text-sm leading-relaxed">Description...</p>
+            <div class="flex space-x-4 pt-2">
+              <button id="tv-detail-btn-play" class="tv-focusable bg-cinema-accent text-white font-black px-8 py-3 rounded-2xl shadow-tv-glow" tabIndex="0">Phát Video (Tập 1)</button>
+              <button onclick="navigateTVScreen('tv-screen-home')" class="tv-focusable bg-slate-800 text-slate-300 font-bold px-6 py-3 rounded-2xl" tabIndex="0">Trang Chủ</button>
+            </div>
+          </div>
+        </div>
+        <div class="bg-cinema-800 rounded-3xl p-6 border border-slate-800 space-y-3">
+          <h3 class="text-sm font-bold text-white">Danh Sách Tập Phim (Bấm số tập để phát đúng tập):</h3>
+          <div id="tv-detail-episodes-grid" class="flex flex-wrap gap-3"></div>
+        </div>
+      </div>
+
+      <!-- TV SCREEN 3: 100% FULLSCREEN AUTOMATIC PLAYER -->
+      <div id="tv-screen-player" class="hidden fixed inset-0 z-50 bg-black w-screen h-screen flex-col justify-between p-8 overflow-hidden">
+        <img id="tv-player-backdrop" src="" class="absolute inset-0 w-full h-full object-cover opacity-45">
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
+
+        <div class="flex items-center justify-between text-white z-20">
+          <div class="flex items-center space-x-3">
+            <span class="bg-cinema-accent text-white font-extrabold text-xs px-2.5 py-1 rounded-lg">FULLSCREEN STREAM</span>
+            <h3 id="tv-player-title" class="text-2xl font-black">THIÊN TRƯỜNG AN - Tập 01</h3>
+          </div>
+          <span class="text-cyan-400 font-mono bg-slate-900/90 px-4 py-1.5 rounded-xl border border-cyan-500/40 text-sm">1080p60 HLS m3u8</span>
+        </div>
+
+        <div class="self-center text-center space-y-3 z-20">
+          <div class="w-24 h-24 bg-cinema-accent text-white rounded-full flex items-center justify-center mx-auto text-4xl shadow-tv-glow animate-pulse">
+            <i class="fa-solid fa-play ml-1"></i>
+          </div>
+          <p class="text-base font-bold text-slate-200">Đang phát full màn hình... Bấm <code class="text-cyan-400">Left / Right</code> để tua 10s</p>
+
+          <div class="pt-4 max-w-2xl mx-auto space-y-2">
+            <p class="text-xs text-cyan-400 font-bold uppercase">Chuyển Tập Phim Nhanh Trên TV:</p>
+            <div id="tv-player-episodes-grid" class="flex flex-wrap justify-center gap-2 max-h-24 overflow-y-auto no-scrollbar p-2 bg-slate-900/80 rounded-2xl border border-slate-800"></div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/95 border border-slate-800 p-5 rounded-3xl flex items-center justify-between z-20 shadow-2xl">
+          <div class="flex items-center space-x-4">
+            <button id="tv-player-btn-prev" class="tv-focusable bg-slate-800 px-5 py-2.5 rounded-xl text-xs font-bold text-white" tabIndex="0"><i class="fa-solid fa-backward-step mr-1"></i> Tập Trước</button>
+            <button class="tv-focusable bg-cyan-400 text-black px-6 py-2.5 rounded-xl text-xs font-black" tabIndex="0"><i class="fa-solid fa-pause mr-1"></i> Tạm Dừng</button>
+            <button id="tv-player-btn-next" class="tv-focusable bg-slate-800 px-5 py-2.5 rounded-xl text-xs font-bold text-white" tabIndex="0">Tập Tiếp <i class="fa-solid fa-forward-step ml-1"></i></button>
+          </div>
+          
+          <button onclick="closeTVPlayerFullscreen()" class="tv-focusable bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-lg" tabIndex="0">
+            <i class="fa-solid fa-xmark mr-1"></i> Thoát Fullscreen (ESC)
+          </button>
+        </div>
+      </div>
+
+      <div id="tv-screen-search" class="tv-screen-content space-y-6 hidden"><h2 class="text-xl font-bold text-white">Tìm Kiếm Phim TV</h2></div>
+      <div id="tv-screen-library" class="tv-screen-content space-y-6 hidden"><h2 class="text-xl font-bold text-white">Tủ Phim</h2></div>
+    </section>
+
+    <!-- ON-SCREEN REMOTE -->
+    <div class="fixed bottom-6 right-6 bg-cinema-900/95 backdrop-blur border border-slate-700 p-4 rounded-3xl shadow-2xl flex flex-col items-center space-y-2 z-50 text-xs">
+      <div class="font-bold text-cyan-400 text-[11px] flex items-center gap-1"><i class="fa-solid fa-gamepad"></i> D-PAD REMOTE</div>
+      <div class="grid grid-cols-3 gap-1.5 w-32 h-32 pt-1">
+        <div></div><button onclick="simulateKey('ArrowUp')" class="bg-slate-800 text-white font-bold rounded-xl flex items-center justify-center"><i class="fa-solid fa-chevron-up"></i></button><div></div>
+        <button onclick="simulateKey('ArrowLeft')" class="bg-slate-800 text-white font-bold rounded-xl flex items-center justify-center"><i class="fa-solid fa-chevron-left"></i></button>
+        <button onclick="simulateKey('Enter')" class="bg-cinema-accent text-white font-black text-xs rounded-xl flex items-center justify-center shadow">OK</button>
+        <button onclick="simulateKey('ArrowRight')" class="bg-slate-800 text-white font-bold rounded-xl flex items-center justify-center"><i class="fa-solid fa-chevron-right"></i></button>
+        <div></div><button onclick="simulateKey('ArrowDown')" class="bg-slate-800 text-white font-bold rounded-xl flex items-center justify-center"><i class="fa-solid fa-chevron-down"></i></button>
+        <button onclick="simulateKey('Escape')" class="bg-slate-800 text-slate-300 font-bold rounded-lg flex items-center justify-center text-[10px]"><i class="fa-solid fa-rotate-left"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const MOVIE_DATABASE = {
+      'thien-truong-an': {
+        slug: 'thien-truong-an', title: 'THIÊN TRƯỜNG AN: PHONG VÂN BẮC HẢI', originalTitle: "Heavenly Chang'an (2026)",
+        poster: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=600&q=80',
+        backdrop: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=1600&q=80',
+        episodesCount: '24/24 Tập', episodes: 24, duration: '45 phút / tập', director: 'Trần Khải Cơ', casts: 'Vương Hạc Đệ, Ngu Thư Hân', genre: 'Cổ Trang, Huyền Huyễn', year: '2026', country: 'Trung Quốc', quality: 'HD - Vietsub',
+        description: 'Bộ phim xoay quanh trận đại chiến ngàn năm giữa Bắc Hải và Thiên Trường An.'
+      },
+      'dai-chien-vo-cuc': {
+        slug: 'dai-chien-vo-cuc', title: 'ĐẠI CHIẾN VÔ CỰC (INFINITY WAR)', originalTitle: 'Avengers: Infinity War Legends',
+        poster: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80',
+        backdrop: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1600&q=80',
+        episodesCount: '1 Tập (Phim Lẻ)', episodes: 1, duration: '149 phút', director: 'Anthony & Joe Russo', casts: 'Robert Downey Jr., Chris Evans', genre: 'Hành Động, Viễn Tưởng', year: '2026', country: 'Mỹ', quality: 'FHD - Vietsub',
+        description: 'Trận chiến sinh tồn cuối cùng giữa vũ trụ và siêu ác nhân Thanos.'
+      },
+      'cyberpunk-neo': {
+        slug: 'cyberpunk-neo', title: 'CYBERPUNK: NEO TOKYO 2099', originalTitle: 'Cyberpunk Neo Tokyo',
+        poster: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=600&q=80',
+        backdrop: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=1600&q=80',
+        episodesCount: '12/12 Tập', episodes: 12, duration: '24 phút / tập', director: 'Shinichiro Watanabe', casts: 'Kenjiro Tsuda, Maaya Sakamoto', genre: 'Hoạt Hình, Viễn Tưởng', year: '2026', country: 'Nhật Bản', quality: '4K - Thuyết Minh',
+        description: 'Thế giới tương lai năm 2099 tại Neo Tokyo.'
+      },
+      'doc-dao-quy-tu': {
+        slug: 'doc-dao-quy-tu', title: 'ĐỘC ĐẠO: QUY TỤ', originalTitle: 'The Sole Path',
+        poster: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=600&q=80',
+        backdrop: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=1600&q=80',
+        episodesCount: '30/30 Tập', episodes: 30, duration: '45 phút / tập', director: 'Phạm Thanh Hải', casts: 'Doãn Quốc Đam, Việt Anh', genre: 'Hình Sự, Tâm Lý', year: '2026', country: 'Việt Nam', quality: 'HD - Tiếng Việt',
+        description: 'Hành trình phá án nghẹt thở của các chiến sĩ công an miền biên giới.'
+      },
+      'hoang-dai-2026': {
+        slug: 'hoang-dai-2026', title: 'KÝ ỨC HOANG DẠI: PHÒNG TUYẾN CUỐI', originalTitle: 'Wild Memories',
+        poster: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=600&q=80',
+        backdrop: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1600&q=80',
+        episodesCount: '8/8 Tập', episodes: 8, duration: '60 phút / tập', director: 'Park Chan-wook', casts: 'Lee Jung-jae, Park So-dam', genre: 'Kinh Dị, Sinh Tồn', year: '2026', country: 'Hàn Quốc', quality: 'Full HD - Vietsub',
+        description: 'Nhóm nghiên cứu thám hiểm bị cô lập giữa rừng tuyết hoang dã.'
+      }
+    };
+
+    function renderMovieCards() {
+      const webContainer = document.getElementById('web-movie-cards-container');
+      const tvContainer = document.getElementById('tv-movie-cards-container');
+      webContainer.innerHTML = ''; tvContainer.innerHTML = '';
+
+      Object.values(MOVIE_DATABASE).forEach(movie => {
+        webContainer.innerHTML += `
+          <div onclick="openMovieDetail('${movie.slug}')" class="group relative rounded-xl overflow-hidden bg-cinema-800 border border-slate-800 hover:border-cyan-400 transition cursor-pointer shadow-card-shadow hover:-translate-y-1">
+            <div class="relative aspect-[2/3] overflow-hidden">
+              <img src="${movie.poster}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+              <span class="absolute top-2 left-2 bg-cinema-accent text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded">${movie.quality}</span>
+            </div>
+            <div class="p-3 space-y-1">
+              <h4 class="text-xs font-bold text-white truncate group-hover:text-cyan-400">${movie.title}</h4>
+              <p class="text-[11px] text-slate-400 truncate">${movie.genre}</p>
+            </div>
+          </div>
+        `;
+
+        tvContainer.innerHTML += `
+          <div onclick="openTVMovieDetail('${movie.slug}')" class="tv-focusable bg-cinema-800 rounded-3xl overflow-hidden border-2 border-transparent cursor-pointer p-3 space-y-3" tabIndex="0">
+            <div class="aspect-[2/3] rounded-2xl overflow-hidden relative">
+              <img src="${movie.poster}" class="w-full h-full object-cover">
+              <span class="absolute top-3 left-3 bg-cinema-accent text-white text-xs font-bold px-2 py-0.5 rounded">${movie.quality}</span>
+            </div>
+            <h4 class="text-sm font-bold text-white truncate px-1">${movie.title}</h4>
+          </div>
+        `;
+      });
+    }
+
+    function navigateWebScreen(screenId) {
+      document.querySelectorAll('.web-screen-content').forEach(el => el.classList.add('hidden'));
+      const target = document.getElementById('web-screen-' + screenId);
+      if (target) target.classList.remove('hidden');
+    }
+
+    function openMovieDetail(slug) {
+      const movie = MOVIE_DATABASE[slug] || MOVIE_DATABASE['thien-truong-an'];
+      document.getElementById('detail-poster').src = movie.poster;
+      document.getElementById('detail-title').innerText = movie.title;
+      document.getElementById('detail-original-title').innerText = movie.originalTitle;
+      document.getElementById('detail-episodes').innerText = movie.episodesCount;
+      document.getElementById('detail-duration').innerText = movie.duration;
+      document.getElementById('detail-director').innerText = movie.director;
+      document.getElementById('detail-year').innerText = movie.year;
+      document.getElementById('detail-genre').innerText = movie.genre;
+      document.getElementById('detail-country').innerText = movie.country;
+      document.getElementById('detail-casts').innerText = movie.casts;
+      document.getElementById('detail-description').innerText = movie.description;
+      document.getElementById('detail-btn-play').onclick = () => openMoviePlayer(slug, 1);
+
+      const epGrid = document.getElementById('detail-episodes-grid');
+      epGrid.innerHTML = '';
+      for (let i = 1; i <= movie.episodes; i++) {
+        const epNumStr = i < 10 ? '0' + i : i;
+        epGrid.innerHTML += `<button onclick="openMoviePlayer('${slug}', ${i})" class="w-12 h-10 ${i === 1 ? 'bg-cinema-accent text-white font-bold' : 'bg-slate-800 text-slate-200'} text-xs rounded-xl">${epNumStr}</button>`;
+      }
+      navigateWebScreen('detail');
+    }
+
+    function openMoviePlayer(slug, episodeNum = 1) {
+      const movie = MOVIE_DATABASE[slug] || MOVIE_DATABASE['thien-truong-an'];
+      const epNumStr = episodeNum < 10 ? '0' + episodeNum : episodeNum;
+      
+      document.getElementById('player-movie-title').innerText = `${movie.title} - Tập ${epNumStr}`;
+      document.getElementById('player-backdrop').src = movie.backdrop;
+
+      const playerGrid = document.getElementById('web-player-episodes-grid');
+      playerGrid.innerHTML = '';
+      for (let i = 1; i <= movie.episodes; i++) {
+        const numStr = i < 10 ? '0' + i : i;
+        playerGrid.innerHTML += `
+          <button onclick="openMoviePlayer('${slug}', ${i})" class="w-10 h-9 ${i === episodeNum ? 'bg-cinema-accent text-white font-bold' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'} font-semibold text-xs rounded-lg">${numStr}</button>
+        `;
+      }
+
+      navigateWebScreen('player');
+    }
+
+    function navigateTVScreen(screenId) {
+      document.querySelectorAll('.tv-screen-content').forEach(el => el.classList.add('hidden'));
+      const target = document.getElementById(screenId);
+      if (target) target.classList.remove('hidden');
+      setTimeout(() => initTVFocus(), 100);
+    }
+
+    function openTVMovieDetail(slug) {
+      const movie = MOVIE_DATABASE[slug] || MOVIE_DATABASE['thien-truong-an'];
+      document.getElementById('tv-detail-poster').src = movie.poster;
+      document.getElementById('tv-detail-title').innerText = movie.title;
+      document.getElementById('tv-detail-original-title').innerText = movie.originalTitle;
+      document.getElementById('tv-detail-episodes').innerText = movie.episodesCount;
+      document.getElementById('tv-detail-duration').innerText = movie.duration;
+      document.getElementById('tv-detail-director').innerText = movie.director;
+      document.getElementById('tv-detail-year').innerText = movie.year;
+      document.getElementById('tv-detail-genre').innerText = movie.genre;
+      document.getElementById('tv-detail-country').innerText = movie.country;
+      document.getElementById('tv-detail-casts').innerText = movie.casts;
+      document.getElementById('tv-detail-desc').innerText = movie.description;
+      document.getElementById('tv-detail-btn-play').onclick = () => openTVMoviePlayer(slug, 1);
+
+      const epGrid = document.getElementById('tv-detail-episodes-grid');
+      epGrid.innerHTML = '';
+      for (let i = 1; i <= movie.episodes; i++) {
+        const epNumStr = i < 10 ? '0' + i : i;
+        epGrid.innerHTML += `<button onclick="openTVMoviePlayer('${slug}', ${i})" class="tv-focusable w-14 h-12 ${i === 1 ? 'bg-cinema-accent text-white font-bold' : 'bg-slate-800 text-slate-300'} text-sm rounded-xl" tabIndex="0">${epNumStr}</button>`;
+      }
+      navigateTVScreen('tv-screen-detail');
+    }
+
+    function openTVMoviePlayer(slug, episodeNum = 1) {
+      const movie = MOVIE_DATABASE[slug] || MOVIE_DATABASE['thien-truong-an'];
+      const epNumStr = episodeNum < 10 ? '0' + episodeNum : episodeNum;
+      
+      document.getElementById('tv-player-title').innerText = `${movie.title} - Tập ${epNumStr}`;
+      document.getElementById('tv-player-backdrop').src = movie.backdrop;
+      
+      const prevBtn = document.getElementById('tv-player-btn-prev');
+      const nextBtn = document.getElementById('tv-player-btn-next');
+      if (episodeNum > 1) {
+        prevBtn.onclick = () => openTVMoviePlayer(slug, episodeNum - 1);
+        prevBtn.classList.remove('opacity-40');
+      } else {
+        prevBtn.onclick = null;
+        prevBtn.classList.add('opacity-40');
+      }
+      if (episodeNum < movie.episodes) {
+        nextBtn.onclick = () => openTVMoviePlayer(slug, episodeNum + 1);
+        nextBtn.classList.remove('opacity-40');
+      } else {
+        nextBtn.onclick = null;
+        nextBtn.classList.add('opacity-40');
+      }
+
+      const tvPlayerEpGrid = document.getElementById('tv-player-episodes-grid');
+      tvPlayerEpGrid.innerHTML = '';
+      for (let i = 1; i <= movie.episodes; i++) {
+        const numStr = i < 10 ? '0' + i : i;
+        tvPlayerEpGrid.innerHTML += `
+          <button onclick="openTVMoviePlayer('${slug}', ${i})" class="tv-focusable w-11 h-10 ${i === episodeNum ? 'bg-cinema-accent text-white font-bold shadow-tv-glow' : 'bg-slate-800 text-slate-300'} text-xs rounded-xl" tabIndex="0">${numStr}</button>
+        `;
+      }
+
+      const playerEl = document.getElementById('tv-screen-player');
+      playerEl.classList.remove('hidden');
+      playerEl.classList.add('flex');
+
+      setTimeout(() => initTVFocus(), 100);
+    }
+
+    function closeTVPlayerFullscreen() {
+      const playerEl = document.getElementById('tv-screen-player');
+      playerEl.classList.add('hidden');
+      playerEl.classList.remove('flex');
+      navigateTVScreen('tv-screen-home');
+    }
+
+    function switchMode(mode) {
+      document.getElementById('view-web').classList.toggle('hidden', mode !== 'web');
+      document.getElementById('view-tv').classList.toggle('hidden', mode !== 'tv');
+      if (mode === 'tv') setTimeout(() => initTVFocus(), 100);
+    }
+
+    let activeZone = 'content';
+    let contentFocusables = [];
+    let sidebarFocusables = [];
+    let currentContentIndex = 0;
+    let currentSidebarIndex = 0;
+
+    function initTVFocus() {
+      const playerEl = document.getElementById('tv-screen-player');
+      
+      if (!playerEl.classList.contains('hidden')) {
+        contentFocusables = Array.from(playerEl.querySelectorAll('.tv-focusable'));
+        sidebarFocusables = [];
+        activeZone = 'content';
+        currentContentIndex = 0;
+      } else {
+        sidebarFocusables = Array.from(document.querySelectorAll('#tv-nav-group .tv-focusable'));
+        contentFocusables = Array.from(document.querySelectorAll('#view-tv .tv-screen-content:not(.hidden) .tv-focusable'));
+        activeZone = 'content';
+        currentContentIndex = 0;
+      }
+      updateTVFocusUI();
+    }
+
+    function updateTVFocusUI() {
+      document.querySelectorAll('#view-tv .tv-focusable').forEach(el => el.classList.remove('tv-focused'));
+
+      if (activeZone === 'content' && contentFocusables.length > 0) {
+        if (currentContentIndex >= contentFocusables.length) currentContentIndex = contentFocusables.length - 1;
+        if (currentContentIndex < 0) currentContentIndex = 0;
+        const target = contentFocusables[currentContentIndex];
+        if (target) { target.classList.add('tv-focused'); target.focus(); }
+      } else if (activeZone === 'sidebar' && sidebarFocusables.length > 0) {
+        if (currentSidebarIndex >= sidebarFocusables.length) currentSidebarIndex = sidebarFocusables.length - 1;
+        if (currentSidebarIndex < 0) currentSidebarIndex = 0;
+        const target = sidebarFocusables[currentSidebarIndex];
+        if (target) { target.classList.add('tv-focused'); target.focus(); }
+      }
+    }
+
+    function simulateKey(key) {
+      const event = new KeyboardEvent('keydown', { key: key });
+      document.dispatchEvent(event);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (document.getElementById('view-tv').classList.contains('hidden')) return;
+
+      const playerEl = document.getElementById('tv-screen-player');
+      if (!playerEl.classList.contains('hidden')) {
+        contentFocusables = Array.from(playerEl.querySelectorAll('.tv-focusable'));
+        sidebarFocusables = [];
+      } else {
+        sidebarFocusables = Array.from(document.querySelectorAll('#tv-nav-group .tv-focusable'));
+        contentFocusables = Array.from(document.querySelectorAll('#view-tv .tv-screen-content:not(.hidden) .tv-focusable'));
+      }
+
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) e.preventDefault();
+
+      if (activeZone === 'content') {
+        if (e.key === 'ArrowRight') {
+          if (currentContentIndex < contentFocusables.length - 1) { currentContentIndex++; updateTVFocusUI(); }
+        } else if (e.key === 'ArrowLeft') {
+          if (playerEl.classList.contains('hidden') && (currentContentIndex % 4 === 0 || currentContentIndex === 0)) {
+            activeZone = 'sidebar';
+            updateTVFocusUI();
+          } else if (currentContentIndex > 0) {
+            currentContentIndex--;
+            updateTVFocusUI();
+          }
+        } else if (e.key === 'ArrowDown') {
+          if (currentContentIndex + 4 < contentFocusables.length) { currentContentIndex += 4; updateTVFocusUI(); }
+          else if (currentContentIndex < contentFocusables.length - 1) { currentContentIndex = contentFocusables.length - 1; updateTVFocusUI(); }
+        } else if (e.key === 'ArrowUp') {
+          if (currentContentIndex - 4 >= 0) { currentContentIndex -= 4; updateTVFocusUI(); }
+        } else if (e.key === 'Enter') {
+          const activeEl = contentFocusables[currentContentIndex];
+          if (activeEl) activeEl.click();
+        }
+      } else if (activeZone === 'sidebar') {
+        if (e.key === 'ArrowRight') {
+          activeZone = 'content';
+          updateTVFocusUI();
+        } else if (e.key === 'ArrowDown') {
+          if (currentSidebarIndex < sidebarFocusables.length - 1) { currentSidebarIndex++; updateTVFocusUI(); }
+        } else if (e.key === 'ArrowUp') {
+          if (currentSidebarIndex > 0) { currentSidebarIndex--; updateTVFocusUI(); }
+        } else if (e.key === 'Enter') {
+          const activeEl = sidebarFocusables[currentSidebarIndex];
+          if (activeEl) activeEl.click();
+        }
+      }
+
+      if (e.key === 'Escape' || e.key === 'Backspace') {
+        if (!playerEl.classList.contains('hidden')) {
+          closeTVPlayerFullscreen();
+        } else {
+          navigateTVScreen('tv-screen-home');
+        }
+      }
+    });
+
+    window.onload = function() {
+      renderMovieCards();
+    };
+  </script>
+</body>
+</html>

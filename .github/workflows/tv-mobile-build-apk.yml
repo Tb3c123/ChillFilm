@@ -1,0 +1,58 @@
+name: Build Android TV & Mobile APKs
+
+on:
+  push:
+    branches: [ main, master ]
+    tags:
+      - 'v*'
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./apps/tv-mobile
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Get Flutter Packages
+        run: flutter pub get
+
+      - name: Build Android Mobile Release APK
+        run: flutter build apk --release --target-platform android-arm64
+
+      - name: Rename & Organize Mobile APK
+        run: cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/app-mobile-release.apk
+
+      - name: Build Android TV Release APK
+        run: flutter build apk --release --target-platform android-arm64
+
+      - name: Rename & Organize Android TV APK
+        run: cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/app-android-tv-release.apk
+
+      - name: Upload Mobile APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-mobile-release
+          path: ./apps/tv-mobile/build/app/outputs/flutter-apk/app-mobile-release.apk
+
+      - name: Upload Android TV APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-android-tv-release
+          path: ./apps/tv-mobile/build/app/outputs/flutter-apk/app-android-tv-release.apk

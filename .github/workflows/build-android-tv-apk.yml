@@ -32,22 +32,19 @@ jobs:
         working-directory: ./apps/tv-mobile
         run: flutter pub get
 
-      - name: Build Universal & Split ABI Release APKs
+      - name: Build Split ABI Release APKs (ARM32 + ARM64)
         working-directory: ./apps/tv-mobile
-        run: |
-          flutter build apk --release
-          flutter build apk --release --split-per-abi
+        run: flutter build apk --release --split-per-abi
 
       - name: Organize Android TV APK Artifacts
         working-directory: ./apps/tv-mobile
         run: |
           mkdir -p build/tv-apks
-          cp build/app/outputs/flutter-apk/app-release.apk build/tv-apks/ChillFilm-TV-Universal.apk
-          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/tv-apks/ChillFilm-TV-ARM32-v7a.apk || true
-          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/tv-apks/ChillFilm-TV-ARM64-v8a.apk || true
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/tv-apks/ChillFilm-TV-ARM32-v7a.apk
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/tv-apks/ChillFilm-TV-ARM64-v8a.apk
 
       - name: Upload Android TV APK Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ChillFilm-AndroidTV-Release-APKs
-          path: ./apps/tv-mobile/build/tv-apks/*
+          path: ./apps/tv-mobile/build/tv-apks/

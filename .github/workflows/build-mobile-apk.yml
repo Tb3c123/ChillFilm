@@ -1,4 +1,4 @@
-name: Build Mobile Android APK
+name: Build Mobile & Tablet APK
 
 on:
   push:
@@ -8,7 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-mobile-apk:
+  build-mobile:
+    name: Build Mobile & Tablet Universal APK
     runs-on: ubuntu-latest
 
     steps:
@@ -32,12 +33,18 @@ jobs:
         working-directory: ./apps/tv-mobile
         run: flutter pub get
 
-      - name: Build Mobile Release APKs (Split per ABI)
+      - name: Build Mobile Universal Release APK
         working-directory: ./apps/tv-mobile
-        run: flutter build apk --release --split-per-abi
+        run: flutter build apk --release
 
-      - name: Upload Mobile APK Artifacts
+      - name: Organize Mobile APK Artifact
+        working-directory: ./apps/tv-mobile
+        run: |
+          mkdir -p build/mobile-apks
+          cp build/app/outputs/flutter-apk/app-release.apk build/mobile-apks/ChillFilm-Mobile-Tablet-Universal.apk
+
+      - name: Upload Mobile APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ChillFilm-Mobile-Release-APKs
-          path: ./apps/tv-mobile/build/app/outputs/flutter-apk/*.apk
+          name: ChillFilm-Mobile-Tablet-Release-APK
+          path: ./apps/tv-mobile/build/mobile-apks/*

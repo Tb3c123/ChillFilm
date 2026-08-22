@@ -47,22 +47,19 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
       `;
       document.head.appendChild(style);
 
-      // 3. Vòng lặp xóa các thẻ Popup/Clickjack động khi tua video
+      // 3. Xóa các thẻ Popup/Clickjack động
       setInterval(function() {
         var overlays = document.querySelectorAll(
           'iframe[src*="ads"], iframe[src*="bet"], div[id*="popup"], div[class*="popup"], div[style*="z-index: 2147483647"]'
         );
         overlays.forEach(function(el) { el.remove(); });
-      }, 500);
+      }, 1000);
     })();
   ''';
 
   @override
   void initState() {
     super.initState();
-    final initialUri = Uri.tryParse(widget.embedUrl);
-    final initialHost = initialUri?.host ?? '';
-
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36')
@@ -75,21 +72,6 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
           onPageFinished: (String url) {
             _controller.runJavaScript(_antiAdAndOverlayScript);
             if (mounted) setState(() { _isLoading = false; });
-          },
-          onNavigationRequest: (NavigationRequest request) {
-            final uri = Uri.tryParse(request.url);
-            final host = uri?.host ?? '';
-
-            if (host.isEmpty ||
-                host == initialHost ||
-                host.contains('nguonc.com') ||
-                host.contains('phimapi.com') ||
-                host.contains('streamc.xyz') ||
-                host.contains('opstream16.com')) {
-              return NavigationDecision.navigate;
-            }
-
-            return NavigationDecision.prevent;
           },
           onWebResourceError: (WebResourceError error) {
             // Error handling
@@ -130,7 +112,7 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
                       CircularProgressIndicator(color: Color(0xFF00E5FF)),
                       SizedBox(height: 16),
                       Text(
-                        'Đang nạp trình phát Embed (Triệt tiêu Overlay Ads)...',
+                        'Đang nạp trình phát Embed Web...',
                         style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold),
                       ),
                     ],

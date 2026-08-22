@@ -22,7 +22,6 @@ class _MobileVideoPlayerScreenState extends State<MobileVideoPlayerScreen> {
   VideoPlayerController? _controller;
   bool _isPlaying = true;
   bool _useEmbedFallback = false;
-  int _retryCount = 0;
 
   static const Map<String, String> _streamHeaders = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
@@ -33,10 +32,10 @@ class _MobileVideoPlayerScreenState extends State<MobileVideoPlayerScreen> {
   @override
   void initState() {
     super.initState();
-    _initPlayerWithRetry();
+    _initPlayer();
   }
 
-  void _initPlayerWithRetry() async {
+  void _initPlayer() async {
     final m3u8Url = widget.episode.m3u8;
 
     if (m3u8Url.isEmpty) {
@@ -44,54 +43,35 @@ class _MobileVideoPlayerScreenState extends State<MobileVideoPlayerScreen> {
       return;
     }
 
-    bool success = false;
+    try {
+      _controller = VideoPlayerController.networkUrl(
+        Uri.parse(m3u8Url),
+        httpHeaders: _streamHeaders,
+        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+      );
 
-    while (_retryCount < 3 && !success && mounted) {
-      try {
-        _controller?.dispose();
-        _controller = VideoPlayerController.networkUrl(
-          Uri.parse(m3u8Url),
-          httpHeaders: _streamHeaders,
-          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-        );
-
-        _controller!.addListener(_onControllerErrorCheck);
-
-        await _controller!.initialize().timeout(const Duration(milliseconds: 3000), onTimeout: () {
-          throw TimeoutException('Thử nạp Native m3u8 lần ${_retryCount + 1} quá thời gian');
-        });
-
-        _controller!.play();
-        success = true;
-        if (mounted) {
-          setState(() {
-            _isPlaying = true;
-            _useEmbedFallback = false;
-          });
-        }
-      } catch (_) {
-        _retryCount++;
-        await Future.delayed(const Duration(milliseconds: 500));
-      }
-    }
-
-    if (!success && mounted) {
-      setState(() {
-        _useEmbedFallback = true;
+      await _controller!.initialize().timeout(const Duration(milliseconds: 2500), onTimeout: () {
+        throw TimeoutException('Luồng Native m3u8 phản hồi chậm');
       });
-    }
-  }
 
-  void _onControllerErrorCheck() {
-    if (_controller != null && _controller!.value.hasError) {
-      final current = _controller!.value.position;
-      _controller!.seekTo(current + const Duration(seconds: 10));
+      _controller!.play();
+      if (mounted) {
+        setState(() {
+          _isPlaying = true;
+          _useEmbedFallback = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _useEmbedFallback = true;
+        });
+      }
     }
   }
 
   @override
   void dispose() {
-    _controller?.removeListener(_onControllerErrorCheck);
     _controller?.dispose();
     super.dispose();
   }
@@ -151,7 +131,7 @@ class _MobileVideoPlayerScreenState extends State<MobileVideoPlayerScreen> {
                         CircularProgressIndicator(color: Color(0xFF00E5FF)),
                         SizedBox(height: 16),
                         Text(
-                          'Đang nạp trình phát Native HLS (Thử lại đến 3 lần)...',
+                          'Đang nạp trình phát video...',
                           style: TextStyle(color: Colors.white70, fontSize: 13),
                         ),
                       ],

@@ -15,10 +15,10 @@ class EpisodeModel extends Equatable {
 
   factory EpisodeModel.fromJson(Map<String, dynamic> json) {
     return EpisodeModel(
-      name: json['name'] ?? '',
-      slug: json['slug'] ?? '',
-      embed: json['embed'] ?? '',
-      m3u8: json['m3u8'] ?? '',
+      name: (json['name'] ?? json['filename'] ?? '').toString(),
+      slug: (json['slug'] ?? '').toString(),
+      embed: (json['link_embed'] ?? json['embed'] ?? '').toString(),
+      m3u8: (json['link_m3u8'] ?? json['m3u8'] ?? '').toString(),
     );
   }
 
@@ -36,10 +36,10 @@ class ServerStreamModel extends Equatable {
   });
 
   factory ServerStreamModel.fromJson(Map<String, dynamic> json) {
-    var rawItems = json['items'] as List? ?? [];
-    List<EpisodeModel> epList = rawItems.map((e) => EpisodeModel.fromJson(e)).toList();
+    var rawItems = (json['server_data'] ?? json['items'] ?? json['episodes']) as List? ?? [];
+    List<EpisodeModel> epList = rawItems.map((e) => EpisodeModel.fromJson(e as Map<String, dynamic>)).toList();
     return ServerStreamModel(
-      serverName: json['server_name'] ?? 'Server #1',
+      serverName: (json['server_name'] ?? json['name'] ?? 'Server #1').toString(),
       episodes: epList,
     );
   }
@@ -85,14 +85,14 @@ class MovieModel extends Equatable {
     required this.servers,
   });
 
-  factory MovieModel.fromJson(Map<String, dynamic> json) {
+  factory MovieModel.fromJson(Map<String, dynamic> json, {List? episodesJson}) {
     List<String> genres = [];
     List<String> countries = [];
 
     final rawCat = json['category'];
     if (rawCat is List) {
       for (var item in rawCat) {
-        if (item is Map && item['name'] != null) genres.add(item['name']);
+        if (item is Map && item['name'] != null) genres.add(item['name'].toString());
       }
     } else if (rawCat is Map) {
       rawCat.forEach((key, groupObj) {
@@ -104,9 +104,9 @@ class MovieModel extends Equatable {
             for (var item in list) {
               if (item is Map && item['name'] != null) {
                 if (groupName.toString().contains('Quốc gia')) {
-                  countries.add(item['name']);
+                  countries.add(item['name'].toString());
                 } else {
-                  genres.add(item['name']);
+                  genres.add(item['name'].toString());
                 }
               }
             }
@@ -115,27 +115,27 @@ class MovieModel extends Equatable {
       });
     }
 
-    String genreText = genres.isNotEmpty ? genres.join(', ') : 'Cổ Trang, Hành Động';
-    String countryText = countries.isNotEmpty ? countries.join(', ') : 'Trung Quốc';
+    String genreText = genres.isNotEmpty ? genres.join(', ') : 'Hành Động, Viễn Tưởng';
+    String countryText = countries.isNotEmpty ? countries.join(', ') : 'Âu Mỹ';
 
-    var rawEpisodes = json['episodes'] as List? ?? [];
-    List<ServerStreamModel> serverList = rawEpisodes.map((s) => ServerStreamModel.fromJson(s)).toList();
+    var rawEpisodes = episodesJson ?? (json['episodes'] as List? ?? []);
+    List<ServerStreamModel> serverList = rawEpisodes.map((s) => ServerStreamModel.fromJson(s as Map<String, dynamic>)).toList();
 
     return MovieModel(
-      id: json['id']?.toString() ?? '',
-      name: json['name'] ?? '',
-      slug: json['slug'] ?? '',
-      originalName: json['original_name'] ?? '',
-      thumbUrl: json['thumb_url'] ?? '',
-      posterUrl: json['poster_url'] ?? json['thumb_url'] ?? '',
-      description: json['description'] ?? '',
-      totalEpisodes: json['total_episodes'] ?? 1,
-      quality: json['quality'] ?? 'HD - Vietsub',
-      duration: json['time'] ?? '45 phút / tập',
-      director: json['director'] ?? 'Trần Khải Cơ',
-      casts: json['casts'] ?? 'Vương Hạc Đệ, Ngu Thư Hân',
+      id: (json['_id'] ?? json['id'] ?? '').toString(),
+      name: (json['name'] ?? '').toString(),
+      slug: (json['slug'] ?? '').toString(),
+      originalName: (json['origin_name'] ?? json['original_name'] ?? '').toString(),
+      thumbUrl: (json['thumb_url'] ?? '').toString(),
+      posterUrl: (json['poster_url'] ?? json['thumb_url'] ?? '').toString(),
+      description: (json['content'] ?? json['description'] ?? '').toString(),
+      totalEpisodes: int.tryParse((json['episode_total'] ?? json['total_episodes'] ?? '1').toString()) ?? 1,
+      quality: (json['quality'] ?? 'HD - Vietsub').toString(),
+      duration: (json['time'] ?? '45 phút / tập').toString(),
+      director: (json['director'] ?? 'Đang cập nhật').toString(),
+      casts: (json['actor'] ?? json['casts'] ?? 'Đang cập nhật').toString(),
       genre: genreText,
-      year: json['year']?.toString() ?? '2026',
+      year: (json['year'] ?? '2026').toString(),
       country: countryText,
       servers: serverList,
     );

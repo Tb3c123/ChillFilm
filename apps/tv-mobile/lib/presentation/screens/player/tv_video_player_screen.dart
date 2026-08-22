@@ -24,6 +24,7 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
   bool _isPlaying = true;
   final bool _showControls = true;
   bool _useEmbedFallback = false;
+  int _retryCount = 0;
 
   static const Map<String, String> _streamHeaders = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
@@ -34,10 +35,10 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
   @override
   void initState() {
     super.initState();
-    _initPlayer();
+    _initPlayerWithRetry();
   }
 
-  void _initPlayer() async {
+  void _initPlayerWithRetry() async {
     final m3u8Url = widget.episode.m3u8;
 
     if (m3u8Url.isEmpty) {
@@ -45,36 +46,57 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
       return;
     }
 
-    try {
-      _controller = VideoPlayerController.networkUrl(
-        Uri.parse(m3u8Url),
-        httpHeaders: _streamHeaders,
-        videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
-      );
+    bool success = false;
 
-      // Tăng thời gian chờ thử nạp Native m3u8 lên 4s để tối đa hóa phát qua Player sạch
-      await _controller!.initialize().timeout(const Duration(milliseconds: 4000), onTimeout: () {
-        throw TimeoutException('Luồng Native m3u8 phản hồi chậm');
+    // Cơ chế Retry tối đa 3 lần cho Native Player trước khi mở WebView Embed
+    while (_retryCount < 3 && !success && mounted) {
+      try {
+        _controller?.dispose();
+        _controller = VideoPlayerController.networkUrl(
+          Uri.parse(m3u8Url),
+          httpHeaders: _streamHeaders,
+          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+        );
+
+        // Lắng nghe lỗi segment khi tua để tự động nhảy cóc qua segment bị chặn/lỗi
+        _controller!.addListener(_onControllerErrorCheck);
+
+        await _controller!.initialize().timeout(const Duration(milliseconds: 3000), onTimeout: () {
+          throw TimeoutException('Thử nạp Native m3u8 lần ${_retryCount + 1} quá thời gian');
+        });
+
+        _controller!.play();
+        success = true;
+        if (mounted) {
+          setState(() {
+            _isPlaying = true;
+            _useEmbedFallback = false;
+          });
+        }
+      } catch (_) {
+        _retryCount++;
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
+    }
+
+    if (!success && mounted) {
+      setState(() {
+        _useEmbedFallback = true;
       });
+    }
+  }
 
-      _controller!.play();
-      if (mounted) {
-        setState(() {
-          _isPlaying = true;
-          _useEmbedFallback = false;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _useEmbedFallback = true;
-        });
-      }
+  void _onControllerErrorCheck() {
+    if (_controller != null && _controller!.value.hasError) {
+      // Khi gặp phân đoạn segment m3u8 bị lỗi hoặc chèn Ads lỗi ➔ Tự động tua tới 10s để vượt mốc lỗi
+      final current = _controller!.value.position;
+      _controller!.seekTo(current + const Duration(seconds: 10));
     }
   }
 
   @override
   void dispose() {
+    _controller?.removeListener(_onControllerErrorCheck);
     _controller?.dispose();
     super.dispose();
   }
@@ -135,7 +157,7 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
                               CircularProgressIndicator(color: Color(0xFF00E5FF)),
                               SizedBox(height: 16),
                               Text(
-                                'Đang nạp trình phát video Native Sạch...',
+                                'Đang nạp trình phát Native HLS (Thử lại đến 3 lần)...',
                                 style: TextStyle(color: Colors.white70, fontSize: 12),
                               ),
                             ],
@@ -178,7 +200,7 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
                         border: Border.all(color: const Color(0xFF00E5FF)),
                       ),
                       child: Text(
-                        _useEmbedFallback ? 'WEB EMBED (SAFE ADS BLOCK)' : '1080p NATIVE CLEAN',
+                        _useEmbedFallback ? 'WEB EMBED (ANTI-OVERLAY)' : '1080p HLS NATIVE (3x RETRY)',
                         style: const TextStyle(
                           color: Color(0xFF00E5FF),
                           fontWeight: FontWeight.bold,
@@ -227,7 +249,7 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
                           children: [
                             Icon(Icons.replay_10_rounded, color: Colors.white70, size: 20),
                             SizedBox(width: 8),
-                            Text('Trái/Phải: Tua 10s', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                            Text('Trái/Phải: Tua 10s (Auto Skip Segment Ads)', style: TextStyle(color: Colors.white70, fontSize: 12)),
                           ],
                         ),
                       ],

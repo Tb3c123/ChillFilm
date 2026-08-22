@@ -21,18 +21,39 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
     'Origin': 'https://phim.nguonc.com',
   };
 
-  static const String _antiAdScript = '''
+  static const String _antiAdAndOverlayScript = '''
     (function() {
-      // Vô hiệu hóa tính năng nảy cửa sổ / tab mới
+      // 1. Triệt tiêu các hàm bật Pop-up & Alert
       window.open = function() { return null; };
       window.alert = function() {};
       window.confirm = function() { return false; };
       
-      // Xóa các khung hình quảng cáo đè đè trên Player
+      // 2. Inject CSS triệt tiêu lớp phủ Click-jack & Ads
+      var style = document.createElement('style');
+      style.innerHTML = `
+        [class*="ad-"], [id*="ad-"], [class*="ads-"], [id*="ads-"],
+        div[style*="z-index: 2147483647"], div[style*="z-index: 9999999"],
+        .jw-ad, .vjs-ad-playing, [class*="popup"], [id*="popup"],
+        div[style*="position: fixed"][style*="top: 0"] {
+          display: none !important;
+          visibility: hidden !important;
+          opacity: 0 !important;
+          pointer-events: none !important;
+        }
+        video {
+          pointer-events: auto !important;
+          z-index: 99999 !important;
+        }
+      `;
+      document.head.appendChild(style);
+
+      // 3. Vòng lặp xóa các thẻ Popup/Clickjack động khi tua video
       setInterval(function() {
-        var ads = document.querySelectorAll('iframe[src*="ads"], iframe[src*="bet"], div[id*="popup"], div[class*="popup"], div[style*="z-index: 99999"]');
-        ads.forEach(function(el) { el.remove(); });
-      }, 1000);
+        var overlays = document.querySelectorAll(
+          'iframe[src*="ads"], iframe[src*="bet"], div[id*="popup"], div[class*="popup"], div[style*="z-index: 2147483647"]'
+        );
+        overlays.forEach(function(el) { el.remove(); });
+      }, 500);
     })();
   ''';
 
@@ -52,15 +73,13 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
             if (mounted) setState(() { _isLoading = true; _hasError = false; });
           },
           onPageFinished: (String url) {
-            // Tiêm kịch bản chống nhảy Pop-up và xóa thẻ Ads khi nạp xong trang
-            _controller.runJavaScript(_antiAdScript);
+            _controller.runJavaScript(_antiAdAndOverlayScript);
             if (mounted) setState(() { _isLoading = false; });
           },
           onNavigationRequest: (NavigationRequest request) {
             final uri = Uri.tryParse(request.url);
             final host = uri?.host ?? '';
 
-            // Chỉ cho phép điều hướng trong domain Embed gốc hoặc domain phim hợp lệ
             if (host.isEmpty ||
                 host == initialHost ||
                 host.contains('nguonc.com') ||
@@ -70,7 +89,6 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
               return NavigationDecision.navigate;
             }
 
-            // Chặn 100% việc tự ý nhảy tab sang các domain quảng cáo bên ngoài
             return NavigationDecision.prevent;
           },
           onWebResourceError: (WebResourceError error) {
@@ -112,7 +130,7 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
                       CircularProgressIndicator(color: Color(0xFF00E5FF)),
                       SizedBox(height: 16),
                       Text(
-                        'Đang nạp trình phát video Embed (Chế độ An Toàn Chống Ads)...',
+                        'Đang nạp trình phát Embed (Triệt tiêu Overlay Ads)...',
                         style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold),
                       ),
                     ],

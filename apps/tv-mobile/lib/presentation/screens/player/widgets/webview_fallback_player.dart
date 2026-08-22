@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -14,6 +15,7 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
   late final WebViewController _controller;
   bool _isLoading = true;
   bool _hasError = false;
+  Timer? _safetyLoadingTimer;
 
   static const Map<String, String> _streamHeaders = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
@@ -57,15 +59,40 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
     })();
   ''';
 
+  static const String _stopPlaybackScript = '''
+    (function() {
+      var videos = document.querySelectorAll('video');
+      videos.forEach(function(v) {
+        try {
+          v.pause();
+          v.src = "";
+          v.load();
+        } catch (_) {}
+      });
+    })();
+  ''';
+
   @override
   void initState() {
     super.initState();
+
+    _safetyLoadingTimer = Timer(const Duration(milliseconds: 2500), () {
+      if (mounted && _isLoading) {
+        setState(() { _isLoading = false; });
+      }
+    });
+
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36')
       ..setBackgroundColor(const Color(0xFF000000))
       ..setNavigationDelegate(
         NavigationDelegate(
+          onProgress: (int progress) {
+            if (progress >= 60 && mounted && _isLoading) {
+              setState(() { _isLoading = false; });
+            }
+          },
           onPageStarted: (String url) {
             if (mounted) setState(() { _isLoading = true; _hasError = false; });
           },
@@ -88,6 +115,17 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
       _hasError = true;
       _isLoading = false;
     }
+  }
+
+  @override
+  void dispose() {
+    _safetyLoadingTimer?.cancel();
+    // Dừng triệt tiêu toàn bộ luồng HTML5 video chạy ngầm và giải phóng WebView
+    try {
+      _controller.runJavaScript(_stopPlaybackScript);
+      _controller.loadRequest(Uri.parse('about:blank'));
+    } catch (_) {}
+    super.dispose();
   }
 
   @override

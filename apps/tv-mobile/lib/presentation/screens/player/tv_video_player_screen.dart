@@ -74,7 +74,12 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
 
   @override
   void dispose() {
-    _controller?.dispose();
+    // Dừng triệt tiêu Native Video Player chạy ngầm và giải phóng bộ nhớ
+    try {
+      _controller?.pause();
+      _controller?.dispose();
+      _controller = null;
+    } catch (_) {}
     super.dispose();
   }
 

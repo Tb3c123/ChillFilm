@@ -15,6 +15,12 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
   bool _isLoading = true;
   bool _hasError = false;
 
+  static const Map<String, String> _streamHeaders = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    'Referer': 'https://phim.nguonc.com/',
+    'Origin': 'https://phim.nguonc.com',
+  };
+
   @override
   void initState() {
     super.initState();
@@ -39,10 +45,7 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
     if (widget.embedUrl.isNotEmpty) {
       _controller.loadRequest(
         Uri.parse(widget.embedUrl),
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-          'Referer': 'https://phimapi.com/',
-        },
+        headers: _streamHeaders,
       );
     } else {
       _hasError = true;
@@ -56,13 +59,11 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
       color: Colors.black,
       child: Stack(
         children: [
-          // WebView Canvas
           if (widget.embedUrl.isNotEmpty && !_hasError)
             Positioned.fill(
               child: WebViewWidget(controller: _controller),
             ),
 
-          // Loading Overlay
           if (_isLoading)
             Positioned.fill(
               child: Container(
@@ -83,7 +84,6 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
               ),
             ),
 
-          // Error Fallback View
           if (_hasError)
             Center(
               child: Column(
@@ -98,10 +98,7 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
                       if (widget.embedUrl.isNotEmpty) {
                         _controller.loadRequest(
                           Uri.parse(widget.embedUrl),
-                          headers: {
-                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-                            'Referer': 'https://phimapi.com/',
-                          },
+                          headers: _streamHeaders,
                         );
                       }
                     },

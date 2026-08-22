@@ -25,6 +25,12 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
   final bool _showControls = true;
   bool _useEmbedFallback = false;
 
+  static const Map<String, String> _streamHeaders = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    'Referer': 'https://phim.nguonc.com/',
+    'Origin': 'https://phim.nguonc.com',
+  };
+
   @override
   void initState() {
     super.initState();
@@ -34,7 +40,6 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
   void _initPlayer() async {
     final m3u8Url = widget.episode.m3u8;
 
-    // Nếu m3u8 rỗng, chuyển ngay sang WebView Embed Player
     if (m3u8Url.isEmpty) {
       if (mounted) setState(() { _useEmbedFallback = true; });
       return;
@@ -43,14 +48,10 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
     try {
       _controller = VideoPlayerController.networkUrl(
         Uri.parse(m3u8Url),
-        httpHeaders: const {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-          'Referer': 'https://phimapi.com/',
-        },
+        httpHeaders: _streamHeaders,
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
 
-      // Timeout sau 2.0s nếu luồng Native m3u8 không phản hồi ➔ Chuyển sang WebView Embed
       await _controller!.initialize().timeout(const Duration(milliseconds: 2000), onTimeout: () {
         throw TimeoutException('Luồng Native m3u8 phản hồi chậm');
       });
@@ -63,7 +64,6 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
         });
       }
     } catch (e) {
-      // Khi gặp sự cố hoặc timeout ➔ Tự động kích hoạt WebView Embed Player
       if (mounted) {
         setState(() {
           _useEmbedFallback = true;
@@ -84,7 +84,6 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
           event.logicalKey == LogicalKeyboardKey.enter ||
           event.logicalKey == LogicalKeyboardKey.gameButtonA ||
           event.logicalKey == LogicalKeyboardKey.space) {
-        // Nút OK: Play / Pause (trên Native Player)
         setState(() {
           if (_controller != null && _controller!.value.isPlaying) {
             _controller!.pause();
@@ -95,13 +94,11 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
           }
         });
       } else if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
-        // Tua lùi 10s
         if (_controller != null && _controller!.value.isInitialized) {
           final current = _controller!.value.position;
           _controller!.seekTo(current - const Duration(seconds: 10));
         }
       } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
-        // Tua tới 10s
         if (_controller != null && _controller!.value.isInitialized) {
           final current = _controller!.value.position;
           _controller!.seekTo(current + const Duration(seconds: 10));
@@ -122,7 +119,6 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
         backgroundColor: Colors.black,
         body: Stack(
           children: [
-            // Video Canvas hoac Hybrid WebView Embed Player
             Positioned.fill(
               child: _useEmbedFallback
                   ? WebviewFallbackPlayer(embedUrl: widget.episode.embed)
@@ -146,7 +142,6 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
                         ),
             ),
 
-            // Top HUD Title Bar
             Positioned(
               top: 24,
               left: 24,
@@ -195,7 +190,6 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
               ),
             ),
 
-            // Bottom Remote Controls Guide
             if (!_useEmbedFallback)
               Positioned(
                 bottom: 24,

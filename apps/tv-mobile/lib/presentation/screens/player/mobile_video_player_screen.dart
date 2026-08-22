@@ -23,6 +23,12 @@ class _MobileVideoPlayerScreenState extends State<MobileVideoPlayerScreen> {
   bool _isPlaying = true;
   bool _useEmbedFallback = false;
 
+  static const Map<String, String> _streamHeaders = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+    'Referer': 'https://phim.nguonc.com/',
+    'Origin': 'https://phim.nguonc.com',
+  };
+
   @override
   void initState() {
     super.initState();
@@ -40,10 +46,7 @@ class _MobileVideoPlayerScreenState extends State<MobileVideoPlayerScreen> {
     try {
       _controller = VideoPlayerController.networkUrl(
         Uri.parse(m3u8Url),
-        httpHeaders: const {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-          'Referer': 'https://phimapi.com/',
-        },
+        httpHeaders: _streamHeaders,
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
 

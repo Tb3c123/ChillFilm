@@ -7,7 +7,7 @@ import 'search/search_screen.dart';
 import 'library/library_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({Key? key}) : super(key: key);
+  const MainNavigationScreen({super.key});
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -23,33 +23,44 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    DeviceUtil.init();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isTv = DeviceUtil.isTv(context);
 
+    // Chế độ Android TV Leanback với Sidebar
     if (isTv) {
       return Scaffold(
         backgroundColor: const Color(0xFF030508),
-        body: Row(
-          children: [
-            TvSidebar(
-              selectedIndex: _currentIndex,
-              onItemSelected: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
-            ),
-            Expanded(
-              child: IndexedStack(
-                index: _currentIndex,
-                children: _screens,
+        body: FocusTraversalGroup(
+          policy: ReadingOrderTraversalPolicy(),
+          child: Row(
+            children: [
+              TvSidebar(
+                selectedIndex: _currentIndex,
+                onItemSelected: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
               ),
-            ),
-          ],
+              Expanded(
+                child: IndexedStack(
+                  index: _currentIndex,
+                  children: _screens,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
 
+    // Chế độ Tablet & Mobile (Hỗ trợ Cảm ứng Touch-first toàn diện)
     return Scaffold(
       backgroundColor: const Color(0xFF030508),
       body: IndexedStack(

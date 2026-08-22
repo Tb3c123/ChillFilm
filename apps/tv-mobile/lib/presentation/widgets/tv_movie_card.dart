@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../core/utils/device_util.dart';
 import '../../domain/entities/movie_entity.dart';
 
 class TvMovieCard extends StatefulWidget {
   final MovieEntity movie;
   final VoidCallback onTap;
+  final bool autoFocus;
 
   const TvMovieCard({
-    Key? key,
+    super.key,
     required this.movie,
     required this.onTap,
-  }) : super(key: key);
+    this.autoFocus = false,
+  });
 
   @override
   State<TvMovieCard> createState() => _TvMovieCardState();
@@ -21,11 +24,17 @@ class _TvMovieCardState extends State<TvMovieCard> {
 
   @override
   Widget build(BuildContext context) {
+    final isTv = DeviceUtil.isTv(context);
+
     return Focus(
+      autofocus: widget.autoFocus,
+      canRequestFocus: isTv,
       onFocusChange: (focused) {
-        setState(() {
-          _isFocused = focused;
-        });
+        if (mounted) {
+          setState(() {
+            _isFocused = focused;
+          });
+        }
       },
       onKeyEvent: (node, event) {
         if (event is KeyDownEvent &&
@@ -38,8 +47,9 @@ class _TvMovieCardState extends State<TvMovieCard> {
         }
         return KeyEventResult.ignored;
       },
-      child: GestureDetector(
+      child: InkWell(
         onTap: widget.onTap,
+        borderRadius: BorderRadius.circular(16),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
           transform: Matrix4.identity()..scale(_isFocused ? 1.08 : 1.0),

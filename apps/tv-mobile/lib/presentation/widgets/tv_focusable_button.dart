@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../core/utils/device_util.dart';
 
 class TvFocusableButton extends StatefulWidget {
   final Widget child;
   final VoidCallback onPressed;
   final EdgeInsetsGeometry padding;
+  final bool autoFocus;
 
   const TvFocusableButton({
-    Key? key,
+    super.key,
     required this.child,
     required this.onPressed,
     this.padding = const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-  }) : super(key: key);
+    this.autoFocus = false,
+  });
 
   @override
   State<TvFocusableButton> createState() => _TvFocusableButtonState();
@@ -22,11 +25,17 @@ class _TvFocusableButtonState extends State<TvFocusableButton> {
 
   @override
   Widget build(BuildContext context) {
+    final isTv = DeviceUtil.isTv(context);
+
     return Focus(
+      autofocus: widget.autoFocus,
+      canRequestFocus: isTv,
       onFocusChange: (focused) {
-        setState(() {
-          _isFocused = focused;
-        });
+        if (mounted) {
+          setState(() {
+            _isFocused = focused;
+          });
+        }
       },
       onKeyEvent: (node, event) {
         if (event is KeyDownEvent &&
@@ -39,8 +48,9 @@ class _TvFocusableButtonState extends State<TvFocusableButton> {
         }
         return KeyEventResult.ignored;
       },
-      child: GestureDetector(
+      child: InkWell(
         onTap: widget.onPressed,
+        borderRadius: BorderRadius.circular(16),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
           transform: Matrix4.identity()..scale(_isFocused ? 1.08 : 1.0),

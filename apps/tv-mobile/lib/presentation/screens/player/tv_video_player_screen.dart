@@ -52,7 +52,8 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
 
-      await _controller!.initialize().timeout(const Duration(milliseconds: 2000), onTimeout: () {
+      // Tăng thời gian chờ thử nạp Native m3u8 lên 4s để tối đa hóa phát qua Player sạch
+      await _controller!.initialize().timeout(const Duration(milliseconds: 4000), onTimeout: () {
         throw TimeoutException('Luồng Native m3u8 phản hồi chậm');
       });
 
@@ -134,7 +135,7 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
                               CircularProgressIndicator(color: Color(0xFF00E5FF)),
                               SizedBox(height: 16),
                               Text(
-                                'Đang nạp trình phát video...',
+                                'Đang nạp trình phát video Native Sạch...',
                                 style: TextStyle(color: Colors.white70, fontSize: 12),
                               ),
                             ],
@@ -177,7 +178,7 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
                         border: Border.all(color: const Color(0xFF00E5FF)),
                       ),
                       child: Text(
-                        _useEmbedFallback ? 'WEB EMBED PLAYER' : '1080p HLS AUTO',
+                        _useEmbedFallback ? 'WEB EMBED (SAFE ADS BLOCK)' : '1080p NATIVE CLEAN',
                         style: const TextStyle(
                           color: Color(0xFF00E5FF),
                           fontWeight: FontWeight.bold,

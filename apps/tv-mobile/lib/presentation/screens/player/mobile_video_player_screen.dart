@@ -50,7 +50,8 @@ class _MobileVideoPlayerScreenState extends State<MobileVideoPlayerScreen> {
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
 
-      await _controller!.initialize().timeout(const Duration(milliseconds: 2000), onTimeout: () {
+      // Tăng thời gian chờ thử nạp Native m3u8 lên 4s để tối đa hóa phát qua Player sạch
+      await _controller!.initialize().timeout(const Duration(milliseconds: 4000), onTimeout: () {
         throw TimeoutException('Luồng Native m3u8 phản hồi chậm');
       });
 
@@ -131,7 +132,7 @@ class _MobileVideoPlayerScreenState extends State<MobileVideoPlayerScreen> {
                         CircularProgressIndicator(color: Color(0xFF00E5FF)),
                         SizedBox(height: 16),
                         Text(
-                          'Đang nạp trình phát video...',
+                          'Đang nạp trình phát video Native Sạch...',
                           style: TextStyle(color: Colors.white70, fontSize: 13),
                         ),
                       ],

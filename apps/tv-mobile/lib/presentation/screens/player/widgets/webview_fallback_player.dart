@@ -21,9 +21,27 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
     'Origin': 'https://phim.nguonc.com',
   };
 
+  static const String _antiAdScript = '''
+    (function() {
+      // Vô hiệu hóa tính năng nảy cửa sổ / tab mới
+      window.open = function() { return null; };
+      window.alert = function() {};
+      window.confirm = function() { return false; };
+      
+      // Xóa các khung hình quảng cáo đè đè trên Player
+      setInterval(function() {
+        var ads = document.querySelectorAll('iframe[src*="ads"], iframe[src*="bet"], div[id*="popup"], div[class*="popup"], div[style*="z-index: 99999"]');
+        ads.forEach(function(el) { el.remove(); });
+      }, 1000);
+    })();
+  ''';
+
   @override
   void initState() {
     super.initState();
+    final initialUri = Uri.tryParse(widget.embedUrl);
+    final initialHost = initialUri?.host ?? '';
+
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36')
@@ -34,7 +52,26 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
             if (mounted) setState(() { _isLoading = true; _hasError = false; });
           },
           onPageFinished: (String url) {
+            // Tiêm kịch bản chống nhảy Pop-up và xóa thẻ Ads khi nạp xong trang
+            _controller.runJavaScript(_antiAdScript);
             if (mounted) setState(() { _isLoading = false; });
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            final uri = Uri.tryParse(request.url);
+            final host = uri?.host ?? '';
+
+            // Chỉ cho phép điều hướng trong domain Embed gốc hoặc domain phim hợp lệ
+            if (host.isEmpty ||
+                host == initialHost ||
+                host.contains('nguonc.com') ||
+                host.contains('phimapi.com') ||
+                host.contains('streamc.xyz') ||
+                host.contains('opstream16.com')) {
+              return NavigationDecision.navigate;
+            }
+
+            // Chặn 100% việc tự ý nhảy tab sang các domain quảng cáo bên ngoài
+            return NavigationDecision.prevent;
           },
           onWebResourceError: (WebResourceError error) {
             // Error handling
@@ -75,7 +112,7 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
                       CircularProgressIndicator(color: Color(0xFF00E5FF)),
                       SizedBox(height: 16),
                       Text(
-                        'Đang nạp trình phát video Embed Web...',
+                        'Đang nạp trình phát video Embed (Chế độ An Toàn Chống Ads)...',
                         style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold),
                       ),
                     ],

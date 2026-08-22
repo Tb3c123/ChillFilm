@@ -43,11 +43,15 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
     try {
       _controller = VideoPlayerController.networkUrl(
         Uri.parse(m3u8Url),
+        httpHeaders: const {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+          'Referer': 'https://phimapi.com/',
+        },
         videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
       );
 
-      // Timeout sau 1.5s nếu luồng Native m3u8 không phản hồi ➔ Chuyển sang WebView Embed
-      await _controller!.initialize().timeout(const Duration(milliseconds: 1500), onTimeout: () {
+      // Timeout sau 2.0s nếu luồng Native m3u8 không phản hồi ➔ Chuyển sang WebView Embed
+      await _controller!.initialize().timeout(const Duration(milliseconds: 2000), onTimeout: () {
         throw TimeoutException('Luồng Native m3u8 phản hồi chậm');
       });
 
@@ -191,7 +195,7 @@ class _TvVideoPlayerScreenState extends State<TvVideoPlayerScreen> {
               ),
             ),
 
-            // Bottom Remote Controls Guide (Uses _isPlaying)
+            // Bottom Remote Controls Guide
             if (!_useEmbedFallback)
               Positioned(
                 bottom: 24,

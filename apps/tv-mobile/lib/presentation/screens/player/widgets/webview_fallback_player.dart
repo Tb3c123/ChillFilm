@@ -20,6 +20,7 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
     super.initState();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36')
       ..setBackgroundColor(const Color(0xFF000000))
       ..setNavigationDelegate(
         NavigationDelegate(
@@ -30,13 +31,19 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
             if (mounted) setState(() { _isLoading = false; });
           },
           onWebResourceError: (WebResourceError error) {
-            // Log error
+            // Error handling
           },
         ),
       );
 
     if (widget.embedUrl.isNotEmpty) {
-      _controller.loadRequest(Uri.parse(widget.embedUrl));
+      _controller.loadRequest(
+        Uri.parse(widget.embedUrl),
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+          'Referer': 'https://phimapi.com/',
+        },
+      );
     } else {
       _hasError = true;
       _isLoading = false;
@@ -89,7 +96,13 @@ class _WebviewFallbackPlayerState extends State<WebviewFallbackPlayer> {
                   ElevatedButton(
                     onPressed: () {
                       if (widget.embedUrl.isNotEmpty) {
-                        _controller.loadRequest(Uri.parse(widget.embedUrl));
+                        _controller.loadRequest(
+                          Uri.parse(widget.embedUrl),
+                          headers: {
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                            'Referer': 'https://phimapi.com/',
+                          },
+                        );
                       }
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF00E5FF)),

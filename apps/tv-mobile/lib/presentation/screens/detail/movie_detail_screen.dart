@@ -10,6 +10,8 @@ import '../../widgets/loading_indicator.dart';
 import '../../widgets/error_view.dart';
 import '../../widgets/tv_focusable_button.dart';
 import '../player/tv_video_player_screen.dart';
+import '../player/mobile_video_player_screen.dart';
+import '../../../core/utils/device_util.dart';
 import '../../../data/models/movie_model.dart';
 import '../../../domain/entities/movie_detail_entity.dart';
 
@@ -44,34 +46,39 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   }
 
   void _openPlayer(MovieDetailEntity detail, dynamic ep) {
+    final movieModel = MovieModel(
+      id: detail.id,
+      name: detail.name,
+      slug: detail.slug,
+      originalName: detail.originalName,
+      thumbUrl: detail.thumbUrl,
+      posterUrl: detail.posterUrl,
+      totalEpisodes: detail.totalEpisodes,
+      quality: 'HD',
+      duration: detail.duration,
+      director: detail.director,
+      casts: detail.casts,
+      genre: detail.genre,
+      year: detail.year,
+      country: detail.country,
+      servers: const [],
+    );
+
+    final episodeModel = EpisodeModel(
+      name: ep.name,
+      slug: ep.slug,
+      embed: ep.embed,
+      m3u8: ep.m3u8,
+    );
+
+    final isTv = DeviceUtil.isTv(context);
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => TvVideoPlayerScreen(
-          movie: MovieModel(
-            id: detail.id,
-            name: detail.name,
-            slug: detail.slug,
-            originalName: detail.originalName,
-            thumbUrl: detail.thumbUrl,
-            posterUrl: detail.posterUrl,
-            totalEpisodes: detail.totalEpisodes,
-            quality: 'HD',
-            duration: detail.duration,
-            director: detail.director,
-            casts: detail.casts,
-            genre: detail.genre,
-            year: detail.year,
-            country: detail.country,
-            servers: const [],
-          ),
-          episode: EpisodeModel(
-            name: ep.name,
-            slug: ep.slug,
-            embed: ep.embed,
-            m3u8: ep.m3u8,
-          ),
-        ),
+        builder: (_) => isTv
+            ? TvVideoPlayerScreen(movie: movieModel, episode: episodeModel)
+            : MobileVideoPlayerScreen(movie: movieModel, episode: episodeModel),
       ),
     );
   }
